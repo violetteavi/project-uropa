@@ -21,6 +21,7 @@ blocks = BlockArray(100)
 frame = 0
 width = 320.0
 height = 200.0
+targetHeight = 40.0
 
 # Wait for blocks #
 while 1:
@@ -37,5 +38,6 @@ while 1:
         centroidX = blocks[index].x + blocks[index].width /2
         propAcross = centroidX * 1.0 / width
         propBottomDown = (blocks[index].y + blocks[index].height) * 1.0 / height
-        print 'PropAcross=%f propBottomDown=%f' % (propAcross, propBottomDown)
-        
+        turn = 2 * propAcross - 1
+        forward = 2*(1-propBottomDown) - 1
+        print 'Turn: %f Forward: %f' % (turn, forward)
