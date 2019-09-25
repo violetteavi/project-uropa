@@ -46,22 +46,22 @@ void loop(){
   if(Serial.available()){
    
    // f is the variable that receives the turning values from pixy 
-   f = Serial.parseFloat();
-
+   int transferInt = Serial.parseInt();
+   int leftMotorInt = (transferInt / 1000)%1000;
+   int rightMotorInt = transferInt % 1000;
+   float leftMotorFloat = leftMotorInt / 1000.0;
+   float rightMotorFloat = rightMotorInt / 1000.0;
+   int leftMotorSignal = (int)(leftMotorFloat * 179);
+   int rightMotorSignal = (int)(rightMotorFloat * 179);
    //Serial.print  ("Camera Turning");
    //Serial.println("\t");
    //Serial.println("AccelX");
   // Serial.print(f);
    //Serial.println("\t");
    //Serial.println(IMU.getAccelX_mss());
-   if(f>0){
-    enableMotors(true);
-   }
-   //The data received negative value = The target is not in the area of the camera 
-   else if(f<0){
-    enableMotors(false);
-    
-   }
+   ESCL.write(leftMotorSignal); 
+   ESCR.write(rightMotorSignal); 
+   digitalWrite(ledPin, HIGH);
  
   //Case:1
         // if (IMU.getAccelX_mss()<=-1.5){
