@@ -1,3 +1,5 @@
+import serial
+import struct
 from pixy import *
 from ctypes import *
 import smbus
@@ -5,26 +7,28 @@ import time
 # Pixy Python SWIG get blocks example #
 
 print ("Pixy Python SWIG Example -- Get Blocks")
-#for RPI version1, use "bus =smbus.SMBus(0)"
-bus = smbus.SMBus(1)
+ser = serial.Serial('/dev/ttyACM0', 9600)
+###for RPI version1, use "bus =smbus.SMBus(0)"
+##bus = smbus.SMBus(1)
+##
+###The is the address we setup in the Arduino Program
+###Slave Address 1
+##address =0x04
+##
+###Slave Address 2
+##address_2 = 0x05
 
-#The is the address we setup in the Arduino Program
-#Slave Address 1
-address =0x04
-
-#Slave Address 2
-address_2 = 0x05
-
-def writeNumber(value):
-    #bus.write_byte(address, value)
-    bus.write_byte(address_2,value)
-    #bus.write_byte_data(address, 0 , value)
-    return -1
-
-def readNumber():
-    #number = bus.read_byte(address)
-    number = bus.read_byte_data(address_2, 1)
-    return number
+##def writeNumber(value):
+##    #bus.write_byte(address, value)
+##    bus.write_byte(address_2,value)
+##    print('YO')
+##    #bus.write_byte_data(address, 0 , value)
+##    return -1
+##
+##def readNumber():
+##    #number = bus.read_byte(address)
+##    number = bus.read_byte_data(address_2, 1)
+##    return number
 # Initialize Pixy Interpreter thread #
 pixy_init()
 
@@ -62,10 +66,10 @@ while 1:
         forward = 2*(1-propBottomDown) - 1
         print 'Turn: %f Forward: %f' % (turn, forward)
 
-        data_list = list(turn)
-          for index in data_list:
+        ser.write(str(turn)+"\n")    
+        #for index in data_list:
               #Sends to the Slaves
-              writeNumber(ord(index))
-              print 'Hello'
-        writeNumber(int(0x0A))
+        
+              
+        #writeNumber(int(0x0A))
         
