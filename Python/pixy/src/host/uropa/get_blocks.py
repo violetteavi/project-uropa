@@ -7,7 +7,7 @@ import time
 # Pixy Python SWIG get blocks example #
 
 print ("Pixy Python SWIG Example -- Get Blocks")
-ser = serial.Serial('/dev/ttyACM0', 9600)
+ser = serial.Serial('/dev/ttyACM1', 9600)
 ###for RPI version1, use "bus =smbus.SMBus(0)"
 ##bus = smbus.SMBus(1)
 ##
@@ -62,12 +62,13 @@ while 1:
         centroidX = blocks[index].x + blocks[index].width /2
         propAcross = centroidX * 1.0 / width
         propBottomDown = (blocks[index].y + blocks[index].height) * 1.0 / height
-        turn = 2 * propAcross - 1
-        forward = 2*(1-propBottomDown) - 1
+        turn = propAcross
+        forward = 1-propBottomDown
         print 'Turn: %f Forward: %f' % (turn, forward)
 
         ser.write(str(turn)+"\n")    
-        #for index in data_list:
+        print 'Wrote to serial'
+	#for index in data_list:
               #Sends to the Slaves
         
               
