@@ -15,6 +15,7 @@ const int Motor2L = 4;//for the motor attached to M2A,M2B//ArduinoMega(pin4)
 const int Motor2R = 5; // pin 5
 const int enB = 6; // pin 6
 char val =0;
+
 void setup() {
 
 pinMode(enA, OUTPUT);
@@ -32,9 +33,8 @@ Serial.println("Enter the key command(a,d,w)");
 }
 
 void loop() {
-  //Set Motors speed maximum range 255
-    analogWrite(enA, 255);
-    analogWrite(enB, 255);
+ 
+   
 /*Available to see the power by putting Duty value on the serial monitor  
 
 /*Modified->
@@ -46,6 +46,7 @@ void loop() {
   {
     //int speed = Serial.parseInt(); //Receive Value from serial monitor
     val = Serial.read();
+    //Set Motors speed maximum range 255
     analogWrite(enA, 255);
     analogWrite(enB, 255);
    
@@ -77,8 +78,8 @@ void loop() {
       Serial.println("FORWARD");
       delay(3000);
     }
-//if the value input is equal to d,both motors run to make it go foward
-    else if(val =='w'){
+//if the value input is equal to d,both motors run to make it turn right
+    else if(val =='d'){
       //Run the backside of the motor to go forward
       analogWrite(Motor1L,0);
       analogWrite(Motor1R,255);
