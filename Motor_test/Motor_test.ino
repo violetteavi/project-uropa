@@ -3,7 +3,7 @@
  * Average Voltage = (Duty ÷ 256) x 5 volts
  */
 const int Motor1 = 2;//for the motor attached to M1A,M1B(motordrive)//ArduinoMega(pin2)
-const int Motor2 = 3;//for the motor attached to M2A,M2B//ArduinoMega(pin3)
+const int Motor2 = 4;//for the motor attached to M2A,M2B//ArduinoMega(pin3)
 
 void setup() {
 
