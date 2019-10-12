@@ -54,15 +54,15 @@ void loop() {
   // read the sensor
   //You should set more than ESCL.write(50) to run continuously
   while(IMU.readSensor()){
-  ESCL.write(55);
-  ESCR.write(55);
+  ESCL.write(90);
+  ESCR.write(90);
   //Case:1
     if (IMU.getAccelX_mss()<=-1.5){
-    ESCL.write(90); 
+    ESCL.write(150); 
   }
   //Case:2
     else if (IMU.getAccelX_mss()>=1){
-    ESCR.write(90);
+    ESCR.write(150);
   }
   delay(500);
   }
