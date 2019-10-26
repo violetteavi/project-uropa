@@ -63,7 +63,9 @@ while 1:
         propAcross = centroidX * 1.0 / width
         propBottomDown = (blocks[index].y + blocks[index].height) * 1.0 / height
         turn = 2*propAcross - 1
-        forward = 2*(1-propBottomDown) - 1
+	turn = max(min(turn, 1.0), -1.0)
+        forward = (1-propBottomDown)
+	forward = max(min(forward, 1.0), 0.0)
         print 'Turn: %f Forward: %f' % (turn, forward)
 	if(forward < 0):
 		forward = 0
@@ -75,15 +77,17 @@ while 1:
 		rightMotor = (1 - turn)
 	leftMotor = leftMotor * forward
 	rightMotor = rightMotor * forward;
+	print 'Left: %f Right: %f' % (leftMotor, rightMotor)
+	
 
-	leftInt = int(leftMotor * 1000)
-	rightInt = int(rightMotor * 1000)
-	transferInt = 1000 * leftInt + rightInt
+	leftInt = int(leftMotor * 100)
+	rightInt = int(rightMotor * 100)
+	transferInt = 100 * leftInt + rightInt
         ser.write(str(transferInt)+"\n")    
-        print 'Wrote to serial'
+        print 'Wrote to serial: %f' % (transferInt)
 	#for index in data_list:
               #Sends to the Slaves
-        
+        time.sleep(0.5)
               
         #writeNumber(int(0x0A))
         

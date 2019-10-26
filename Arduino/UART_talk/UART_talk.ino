@@ -1,3 +1,5 @@
+
+
 /*This is the file for testing the motors with the turning data from the pixy-CDR
 1. Make sure the arduino device name is right one ex) /dev/ttyACM1 or '/dev/ttyACM0'
 -> change it in the get_blocks.py 
@@ -8,18 +10,29 @@
 //#include "Wire.h"
 //#include "SPI.h"
 //#include "MPU9250.h"
-
+#include <ESC.h>
+#define SPEED_MIN (1100)
+#define SPEED_MAX (1500)
+#define PROPORTION_CAP (1)
 //MPU9250 IMU(Wire,0x68);
 int status;
-Servo ESCL;//Left side motor
-Servo ESCR;//Right side motor
+ESC myESCL (11, SPEED_MIN, SPEED_MAX, 500);//Left side motor
+ESC myESCR (12, SPEED_MIN, SPEED_MAX, 500);//Right side motor
 
+//int leftMotorPin = 11;
+//int rightMotorPin = 12;
+int enablePin = 2;
 int ledPin = 5;
+int watchdogPeriod = 1000;
+int lastUpdateTime;
+
+//int minSpeed = 55;
+//int maxSpeed = 80;
 
 void setup() {
   Serial.begin(9600);
-  ESCR.attach(11);//Right side ESC signal pin9
-  ESCL.attach(12);//Left side ESC signal pin10
+  myESCL.arm();//Left side ESC signal pin10
+  myESCR.arm();//Right side ESC signal pin9
  
   while(!Serial) {}
   //status = IMU.begin();
@@ -31,43 +44,67 @@ void setup() {
   //IMU.setDlpfBandwidth(MPU9250::DLPF_BANDWIDTH_20HZ);
   // setting SRD to 19 for a 50 Hz update rate
   //IMU.setSrd(19);
-//Initializing two motor power as 0 at the beginning  
-  ESCL.write(0);
-  ESCR.write(0);
 
   //Serial.println("Ready");
+  pinMode(enablePin, INPUT);
   pinMode(ledPin, OUTPUT);
 
   digitalWrite(ledPin, LOW);
+  //delay(5000);
+  enableMotors(false);
+  lastUpdateTime = millis();
 }
 
 void loop(){
+  if(digitalRead(enablePin) == LOW)
+  {
+    enableMotors(false);
+    return;
+  }
   float f;
   if(Serial.available()){
    
    // f is the variable that receives the turning values from pixy 
    int transferInt = Serial.parseInt();
-   int leftMotorInt = (transferInt / 1000)%1000;
-   int rightMotorInt = transferInt % 1000;
-   float leftMotorFloat = leftMotorInt / 1000.0;
-   float rightMotorFloat = rightMotorInt / 1000.0;
-   int leftMotorSignal = (int)(leftMotorFloat * 179);
-   int rightMotorSignal = (int)(rightMotorFloat * 179);
-   //Serial.print  ("Camera Turning");
-   //Serial.println("\t");
-   //Serial.println("AccelX");
-  // Serial.print(f);
+   if(transferInt < 0  || transferInt >= 10000) return;
+   int leftMotorInt = (transferInt / 100);
+   int rightMotorInt = transferInt % 100;
+   Serial.print("TransferInt:\t");
+   Serial.print(transferInt);
+   Serial.print("\tLeftMotorInt:\t");
+   Serial.print(leftMotorInt);
+   Serial.print("\tRightMotorInt:\t");
+   Serial.print(rightMotorInt);
+   Serial.println();
+   float leftMotorFloat = leftMotorInt / 100.0 * PROPORTION_CAP;
+   float rightMotorFloat = rightMotorInt / 100.0 * PROPORTION_CAP;
+   
+   int leftMotorSignal = (int)(leftMotorFloat * (SPEED_MAX- SPEED_MIN) + SPEED_MIN);
+   int rightMotorSignal = (int)(rightMotorFloat * (SPEED_MAX- SPEED_MIN) + SPEED_MIN);
+   /*
+   Serial.print("LeftMotor:\t");
+   Serial.print(leftMotorSignal);
+   Serial.print("\tRightMotor:\t");
+   Serial.print(rightMotorSignal);
+   Serial.println();
+   */
    //Serial.println("\t");
    //Serial.println(IMU.getAccelX_mss());
-   ESCL.write(leftMotorSignal); 
-   ESCR.write(rightMotorSignal); 
+   /*
+   myESCL.speed(leftMotorSignal); 
+   myESCR.speed(rightMotorSignal); 
+   delay(10);
    digitalWrite(ledPin, HIGH);
+   */
+   enableMotors(false);
+   
+   lastUpdateTime = millis();
  
   //Case:1
         // if (IMU.getAccelX_mss()<=-1.5){
         //    ESCL.write(90); 
        //     }
-  //Case:2
+  //Case:2enableMotors
          //else if (IMU.getAccelX_mss()>=1){
         //    ESCR.write(90);
          //    }
@@ -75,8 +112,10 @@ void loop(){
   }
   //If the data is not received turn the motors off
   else
-    enableMotors(false);
-  
+    if(millis() - lastUpdateTime > watchdogPeriod)
+    {
+      enableMotors(false);
+    }
   }
   
   
@@ -84,15 +123,17 @@ void enableMotors(bool active)
 {
   if(active)
   {
-      ESCL.write(179); // COMMENT THIS OUT TO TURN LEFT    (BOTH UNCOMMENTED IS FULL FWD)
-      ESCR.write(179); // COMMENT THIS OUT TO TURN RIGHT
+      myESCL.speed(SPEED_MAX); // COMMENT THIS OUT TO TURN LEFT    (BOTH UNCOMMENTED IS FULL FWD)
+      myESCR.speed(SPEED_MAX); // COMMENT THIS OUT TO TURN RIGHT
       digitalWrite(ledPin, HIGH);
+      delay(10);
   }
   else
   {
-      ESCL.write(55);
-      ESCR.write(55);
+      myESCL.speed(SPEED_MIN);
+      myESCR.speed(SPEED_MIN);
       digitalWrite(ledPin, LOW);
+      delay(10);
   }
 }
   

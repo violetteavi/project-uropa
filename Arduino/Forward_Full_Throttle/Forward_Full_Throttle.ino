@@ -1,18 +1,22 @@
 #include "Servo.h"
 //#include "MPU9250.h"
+#include <ESC.h>
+#define SPEED_MIN (1000)
+#define SPEED_MAX (2000)
+//MPU9250 IMU(Wire,0x68);
+
+//int leftMotorPin = 11;
+//int rightMotorPin = 12;
+int enablePin = 2;
+int ledPin = 5;
+double powerProportion = 0.4;
+int status;
 
 //MPU9250 IMU(Wire,0x68);
 
-int leftMotorPin = 11;
-int rightMotorPin = 12;
-int enablePin = 2;
-int ledPin = 5;
-
-int status;
-Servo ESCL;//Left side motor
-Servo ESCR;//Right side motor
-
-int maxSpeed = 179;
+ESC myESCL (12, SPEED_MIN, SPEED_MAX, 500);//Left side motor
+ESC myESCR (11, SPEED_MIN, SPEED_MAX, 500);//Right side motor
+//int maxSpeed = 90;
 int period = 10000;
 bool isActive = false;
 bool enabled = false;
@@ -20,24 +24,24 @@ int startTime;
   
 void setup() {
   //Serial.begin(9600);
-  ESCL.attach(leftMotorPin);//Left side ESC signal pin10
-  ESCR.attach(rightMotorPin);//Right side ESC signal pin9
-  delay(100);
+  myESCL.arm();//Left side ESC signal pin10
+  myESCR.arm();//Right side ESC signal pin9
+  
   //Serial.println("Ready");
   pinMode(enablePin, INPUT);
   pinMode(ledPin, OUTPUT);
 
   digitalWrite(ledPin, LOW);
   startTime = millis();
-  ESCL.write(0);
-  ESCR.write(0);
-  delay(100);
+  delay(5000);
+
 }
 
 void loop(){
-
+  myESCL.arm();//Left side ESC signal pin10
+  myESCR.arm();//Right side ESC signal pin9
   bool prevEnabled = enabled;
-  enabled = (true); //digitalRead(enablePin) == HIGH
+  enabled = (digitalRead(enablePin) == HIGH); //
   if(enabled and !prevEnabled)
   {
       isActive = true;
@@ -65,14 +69,18 @@ void enableMotors(bool active)
 {
   if(active)
   {
-      ESCL.write(maxSpeed); // COMMENT THIS OUT TO TURN LEFT    (BOTH UNCOMMENTED IS FULL FWD)
-      ESCR.write(maxSpeed); // COMMENT THIS OUT TO TURN RIGHT
+      int motorPower = (int)(powerProportion*(SPEED_MAX-SPEED_MIN) + SPEED_MIN);
+      myESCL.speed(motorPower); // COMMENT THIS OUT TO TURN LEFT    (BOTH UNCOMMENTED IS FULL FWD)
+      myESCR.speed(motorPower); // COMMENT THIS OUT TO TURN RIGHT
+      delay(100);
       digitalWrite(ledPin, HIGH);
   }
   else
   {
-      ESCL.write(55);
-      ESCR.write(55);
+      //ESCL.write(55);
+      myESCL.speed(SPEED_MIN);
+      myESCR.speed(SPEED_MIN);
+      delay(100);
       digitalWrite(ledPin, LOW);
   }
 }
