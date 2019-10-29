@@ -123,19 +123,21 @@ void parseTransferInt()
     case 0: 
       return; // no packet fully written yet
     case 1: 
+      bufferReadFlag = -1;
       potentialTransferInt = atoi(serialBuffer1);
       break;
     case 2:
+      bufferReadFlag = -2;
       potentialTransferInt = atoi(serialBuffer2);
       break;
   }
+  bufferReadFlag = 0;
   if(potentialTransferInt >= 0  && potentialTransferInt < 10000)
   {
     transferInt = potentialTransferInt;
     lastUpdateTime = millis();
-    bufferReadFlag = 0;
-    //Serial.print("TransferInt:\t");
-    //Serial.println(transferInt);
+    // Serial.print("TransferInt:\t");
+    // Serial.println(transferInt);
   }
 }
 
@@ -175,11 +177,17 @@ void serialByteRecieved(char byteRecieved)
     {
       case 1: 
         buffer1Length = 0;
-        writeBuffer = 2;
+        if(bufferReadFlag != -2) // - means reading
+        {
+          writeBuffer = 2;
+        }
         break;
       case 2: 
         buffer2Length = 0;
-        writeBuffer = 1;
+        if(bufferReadFlag != -1) // - means reading
+        {
+          writeBuffer = 1;
+        }
         break;
     }
   }

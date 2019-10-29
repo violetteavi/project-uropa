@@ -84,7 +84,7 @@ while 1:
 	leftInt = int(leftMotor * 100)
 	rightInt = int(rightMotor * 100)
 	transferInt = 100 * leftInt + rightInt
-	transferString = "00" + str(transferInt) + "\0\n"
+	transferString = str(transferInt) + "\n"
         ser.write(transferString)    
         print 'Wrote to serial: %s' % (transferString)
 	#for index in data_list:
