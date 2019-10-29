@@ -7,7 +7,8 @@ import time
 # Pixy Python SWIG get blocks example #
 
 print ("Pixy Python SWIG Example -- Get Blocks")
-ser = serial.Serial('/dev/ttyACM0', 9600)
+ser = serial.Serial('/dev/ttyACM1', 9600)
+#write.timeout(2)
 ###for RPI version1, use "bus =smbus.SMBus(0)"
 ##bus = smbus.SMBus(1)
 ##
@@ -83,11 +84,12 @@ while 1:
 	leftInt = int(leftMotor * 100)
 	rightInt = int(rightMotor * 100)
 	transferInt = 100 * leftInt + rightInt
-        ser.write(str(transferInt)+"\n")    
-        print 'Wrote to serial: %f' % (transferInt)
+	transferString = "00" + str(transferInt) + "\0\n"
+        ser.write(transferString)    
+        print 'Wrote to serial: %s' % (transferString)
 	#for index in data_list:
               #Sends to the Slaves
-        time.sleep(0.5)
+       # time.sleep(0.5)
               
         #writeNumber(int(0x0A))
         
