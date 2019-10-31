@@ -65,24 +65,22 @@ while 1:
         propBottomDown = (blocks[index].y + blocks[index].height) * 1.0 / height
         turn = 2*propAcross - 1
 	turn = max(min(turn, 1.0), -1.0)
-        forward = (1-propBottomDown)
+        forward = 2*(1-propBottomDown) - 1
 	forward = max(min(forward, 1.0), 0.0)
         print 'Turn: %f Forward: %f' % (turn, forward)
-	if(forward < 0):
-		forward = 0
-	leftMotor = 1.0
-	rightMotor = 1.0
-	if(turn < 0):
-		leftMotor = (1 + turn)
-	if(turn > 0):
-		rightMotor = (1 - turn)
-	leftMotor = leftMotor * forward
-	rightMotor = rightMotor * forward;
-	print 'Left: %f Right: %f' % (leftMotor, rightMotor)
 	
+	leftMotor = 1*turn + 1*forward
+	rightMotor = -1*turn + 1*forward
+	maxMag = max(abs(leftMotor), abs(rightMotor))
+	if(maxMag > 1):
+		leftMotor = leftMotor / maxMag
+		rightMotor = rightMotor / maxMag
+	print 'Left: %f Right: %f' % (leftMotor, rightMotor)
 
-	leftInt = int(leftMotor * 100)
-	rightInt = int(rightMotor * 100)
+	leftInt = int(leftMotor * 50 + 50)
+	rightInt = int(rightMotor * 50 + 50)
+	leftInt = max(0, min(99, leftInt))
+	rightInt = max(0, min(99, rightInt))
 	transferInt = 100 * leftInt + rightInt
 	transferString = str(transferInt) + "\n"
         ser.write(transferString)    
