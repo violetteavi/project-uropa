@@ -11,14 +11,17 @@
 //#include "SPI.h"
 //#include "MPU9250.h"
 #include <ESC.h>
-#define SPEED_MIN (1100)
-#define SPEED_MAX (1500)
+#define SPEED_MAXB (1100) //backward max 
+#define SPEED_MINB (1460) //backward max 
+#define SPEED_MAXF (1900) //forward max 
+#define SPEED_MINF (1530) //foraward max 
+#define SPEED_STOP (1500) // Stop
 #define PROPORTION_CAP (1)
 #define MAX_BUFF_LENGTH (50)
 //MPU9250 IMU(Wire,0x68);
 int status;
-ESC myESCL (11, SPEED_MIN, SPEED_MAX, 500);//Left side motor
-ESC myESCR (12, SPEED_MIN, SPEED_MAX, 500);//Right side motor
+ESC myESCL (11, SPEED_MAXB, SPEED_MAXF, 1500);//Left side motor
+ESC myESCR (12, SPEED_MAXB, SPEED_MAXF, 1500);//Right side motor
 
 //int leftMotorPin = 11;
 //int rightMotorPin = 12;
@@ -79,8 +82,8 @@ void loop(){
    float leftMotorFloat = leftMotorInt / 100.0 * PROPORTION_CAP;
    float rightMotorFloat = rightMotorInt / 100.0 * PROPORTION_CAP;
    
-   int leftMotorSignal = (int)(leftMotorFloat * (SPEED_MAX- SPEED_MIN) + SPEED_MIN);
-   int rightMotorSignal = (int)(rightMotorFloat * (SPEED_MAX- SPEED_MIN) + SPEED_MIN);
+   int leftMotorSignal = (int)(leftMotorFloat * (SPEED_MAXF- SPEED_MINF) + SPEED_MINF);
+   int rightMotorSignal = (int)(rightMotorFloat * (SPEED_MAXF- SPEED_MINF) + SPEED_MINF);
    myESCL.speed(leftMotorSignal); 
    myESCR.speed(rightMotorSignal); 
    delay(10);
@@ -197,15 +200,15 @@ void enableMotors(bool active)
 {
   if(active)
   {
-      myESCL.speed(SPEED_MAX); // COMMENT THIS OUT TO TURN LEFT    (BOTH UNCOMMENTED IS FULL FWD)
-      myESCR.speed(SPEED_MAX); // COMMENT THIS OUT TO TURN RIGHT
+      myESCL.speed(SPEED_MAXF); // COMMENT THIS OUT TO TURN LEFT    (BOTH UNCOMMENTED IS FULL FWD)
+      myESCR.speed(SPEED_MAXF); // COMMENT THIS OUT TO TURN RIGHT
       digitalWrite(ledPin, HIGH);
       delay(10);
   }
   else
   {
-      myESCL.speed(SPEED_MIN);
-      myESCR.speed(SPEED_MIN);
+      myESCL.speed(SPEED_STOP);
+      myESCR.speed(SPEED_STOP);
       digitalWrite(ledPin, LOW);
       delay(10);
   }
