@@ -11,22 +11,23 @@
 //#include "SPI.h"
 //#include "MPU9250.h"
 #include <ESC.h>
-#define SPEED_MAXB (1100) //backward max 
-#define SPEED_MINB (1460) //backward max 
-#define SPEED_MAXF (1900) //forward max 
-#define SPEED_MINF (1530) //foraward max 
-#define SPEED_STOP (1500) // Stop
+#define PWM_MAXB (1100) //backward max 
+#define PWM_MINB (1460) //backward min 
+#define PWM_MAXF (1900) //forward max 
+#define PWM_MINF (1530) //forward min 
+#define PWM_STOP (1500) // Stop
 #define PROPORTION_CAP (1)
 #define MAX_BUFF_LENGTH (50)
 //MPU9250 IMU(Wire,0x68);
 int status;
-ESC myESCL (11, SPEED_MAXB, SPEED_MAXF, 1500);//Left side motor
-ESC myESCR (12, SPEED_MAXB, SPEED_MAXF, 1500);//Right side motor
+ESC myESCL (11, PWM_MAXB, PWM_MAXF, 1500);//Left side motor
+ESC myESCR (12, PWM_MAXB, PWM_MAXF, 1500);//Right side motor
 
 //int leftMotorPin = 11;
 //int rightMotorPin = 12;
-int enablePin = 2;
-int ledPin = 5;
+int enablePin = 50;
+int ledPin = 52;
+int groundPin = 53;
 int watchdogPeriod = 1000;
 int lastUpdateTime;
 
@@ -59,10 +60,12 @@ void setup() {
   //Serial.println("Ready");
   pinMode(enablePin, INPUT);
   pinMode(ledPin, OUTPUT);
+  pinMode(groundPin, OUTPUT);
 
   digitalWrite(ledPin, LOW);
+  digitalWrite(groundPin, LOW);
   //delay(5000);
-  enableMotors(false);
+  setMotorSpeeds(0, 0);
   lastUpdateTime = millis();
 }
 
@@ -70,7 +73,7 @@ void loop(){
   parseTransferInt();
   if(digitalRead(enablePin) == LOW)
   {
-    enableMotors(false);
+    setMotorSpeeds(0, 0);
     return;
   }
   
@@ -79,24 +82,10 @@ void loop(){
    if(transferInt < 0  || transferInt >= 10000) return;
    int leftMotorInt = (transferInt / 100);
    int rightMotorInt = transferInt % 100;
-   float leftMotorFloat = leftMotorInt / 100.0 * PROPORTION_CAP;
-   float rightMotorFloat = rightMotorInt / 100.0 * PROPORTION_CAP;
+   float leftMotorFloat = (2 * leftMotorInt / 100.0) - 1;
+   float rightMotorFloat = (2 * rightMotorInt / 100.0) - 1;
+   setMotorSpeeds(leftMotorFloat, rightMotorFloat);
    
-   int leftMotorSignal = (int)(leftMotorFloat * (SPEED_MAXF- SPEED_MINF) + SPEED_MINF);
-   int rightMotorSignal = (int)(rightMotorFloat * (SPEED_MAXF- SPEED_MINF) + SPEED_MINF);
-   myESCL.speed(leftMotorSignal); 
-   myESCR.speed(rightMotorSignal); 
-   delay(10);
-   digitalWrite(ledPin, HIGH);
-   //*/
-   //enableMotors(false);
-   /*
-   Serial.print("LeftMotor:\t");
-   Serial.print(leftMotorSignal);
-   Serial.print("\tRightMotor:\t");
-   Serial.print(rightMotorSignal);
-   Serial.println();
-   */
    //Serial.println("\t");
    //Serial.println(IMU.getAccelX_mss());
    ///*
@@ -114,7 +103,7 @@ void loop(){
   //If the data is not received turn the motors off
   else
   {
-    enableMotors(false);
+    setMotorSpeeds(0, 0);
   }
 }
 
@@ -180,14 +169,14 @@ void serialByteRecieved(char byteRecieved)
     {
       case 1: 
         buffer1Length = 0;
-        if(bufferReadFlag != -2) // - means reading
+        if(bufferReadFlag != -2) // if reading, don't switch
         {
           writeBuffer = 2;
         }
         break;
       case 2: 
         buffer2Length = 0;
-        if(bufferReadFlag != -1) // - means reading
+        if(bufferReadFlag != -1) // if reading, don't switch
         {
           writeBuffer = 1;
         }
@@ -196,21 +185,35 @@ void serialByteRecieved(char byteRecieved)
   }
 }
   
-void enableMotors(bool active)
+
+void setMotorSpeeds(float leftProportion, float rightProportion)
 {
-  if(active)
+  int leftMotorPWM = proportionToPWM(leftProportion);
+  int rightMotorPWM = proportionToPWM(rightProportion);
+  myESCL.speed(leftMotorPWM); // COMMENT THIS OUT TO TURN LEFT    (BOTH UNCOMMENTED IS FULL FWD)
+  myESCR.speed(rightMotorPWM); // COMMENT THIS OUT TO TURN RIGHT
+  if(leftMotorPWM != PWM_STOP || rightMotorPWM != PWM_STOP)
+    digitalWrite(ledPin, HIGH);
+  else
+    digitalWrite(ledPin, LOW);
+}
+
+int proportionToPWM(float proportion)
+{
+  if(proportion > 0)
   {
-      myESCL.speed(SPEED_MAXF); // COMMENT THIS OUT TO TURN LEFT    (BOTH UNCOMMENTED IS FULL FWD)
-      myESCR.speed(SPEED_MAXF); // COMMENT THIS OUT TO TURN RIGHT
-      digitalWrite(ledPin, HIGH);
-      delay(10);
+    int pwmF = (int)(proportion*(PWM_MAXF-PWM_MINF) + PWM_MINF);
+    return pwmF;
+  }
+  else if(proportion < 0)
+  {
+    proportion *= -1;
+    int pwmB = (int)(proportion*(PWM_MAXB-PWM_MINB) + PWM_MINB);
+    return pwmB;
   }
   else
   {
-      myESCL.speed(SPEED_STOP);
-      myESCR.speed(SPEED_STOP);
-      digitalWrite(ledPin, LOW);
-      delay(10);
+    return PWM_STOP;
   }
 }
   
