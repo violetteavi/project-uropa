@@ -6,9 +6,8 @@
 2. Due to IMU sensor library file issue, we are not using the code related to the sensor
 -> All the codes are commented
 */
-#include "Servo.h"
-//#include "Wire.h"
-//#include "SPI.h"
+
+
 //#include "MPU9250.h"
 #include <ESC.h>
 #define PWM_MAXB (1100) //backward max 

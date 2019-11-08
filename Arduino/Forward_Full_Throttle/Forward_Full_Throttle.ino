@@ -11,8 +11,8 @@
 //int leftMotorPin = 11;
 //int rightMotorPin = 12;
 int enablePin = 50;
-int ledPin = 52;
-int groundPin = 53;
+int ledPin = 53;
+int groundPin = 36;
 double powerProportion = 0.4;
 
 //MPU9250 IMU(Wire,0x68);
@@ -34,14 +34,14 @@ void setup() {
   pinMode(ledPin, OUTPUT);
   pinMode(groundPin, OUTPUT);
 
-  digitalWrite(ledPin, LOW);
+  digitalWrite(ledPin, HIGH);
   digitalWrite(groundPin, LOW);
   startTime = millis();
 }
 
 void loop(){
   bool prevEnabled = enabled;
-  enabled = (digitalRead(enablePin) == HIGH); //
+  enabled = false;//(digitalRead(enablePin) == HIGH); //
   if(enabled and !prevEnabled)
   {
       state = 0;
@@ -53,13 +53,13 @@ void loop(){
     switch(state)
     {
       case 0:
-        setMotorSpeeds(powerProportion, powerProportion);
+        //setMotorSpeeds(powerProportion, powerProportion);
         break;
       case 1:
-        setMotorSpeeds(-powerProportion, -powerProportion);
+        //setMotorSpeeds(-powerProportion, -powerProportion);
         break;
       case 2:
-        setMotorSpeeds(0, 0);
+        //setMotorSpeeds(0, 0);
         break;
     }
     
@@ -72,7 +72,7 @@ void loop(){
   }
   else
   {
-      setMotorSpeeds(0, 0);
+      //setMotorSpeeds(0, 0);
       state = 0;
   }
 }

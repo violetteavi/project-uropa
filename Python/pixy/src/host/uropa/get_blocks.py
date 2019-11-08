@@ -7,7 +7,7 @@ import time
 # Pixy Python SWIG get blocks example #
 
 print ("Pixy Python SWIG Example -- Get Blocks")
-ser = serial.Serial('/dev/ttyACM1', 9600)
+ser = serial.Serial('/dev/ttyACM0', 9600)
 #write.timeout(2)
 ###for RPI version1, use "bus =smbus.SMBus(0)"
 ##bus = smbus.SMBus(1)

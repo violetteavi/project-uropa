@@ -14,15 +14,11 @@
 // an MPU9250 object with the MPU-9250 sensor on I2C bus 0 with address 0x68
 MPU9250 IMU(Wire,0x68);
 int status;
-Servo ESCL;//Left side motor
-Servo ESCR;//Right side motor
 
 void setup() {
 
   // serial to display data
   Serial.begin(9600);
-  ESCL.attach(10);//Left side ESC signal pin10
-  ESCR.attach(9);//Right side ESC signal pin9
   while(!Serial) {}
 
   // start communication with IMU 
@@ -42,29 +38,14 @@ void setup() {
   IMU.setDlpfBandwidth(MPU9250::DLPF_BANDWIDTH_20HZ);
   // setting SRD to 19 for a 50 Hz update rate
   IMU.setSrd(19);
-
-//Initializing two motor power as 0 at the beginning  
-  ESCL.write(0);
-  ESCR.write(0);
 }
 
 
 
 void loop() {
   // read the sensor
-  //You should set more than ESCL.write(50) to run continuously
-  while(IMU.readSensor()){
-    ;
-  //ESCL.write(90);
-  //ESCR.write(90);
-  //Case:1
-    //if (IMU.getAccelX_mss()<=-1.5){
-    //ESCL.write(150); 
-  //}
-  //Case:2
-    //else if (IMU.getAccelX_mss()>=1){
-    //ESCR.write(150);
-  }
+  //while(IMU.readSensor()){}
+  IMU.readSensor();
   
   float accelX = IMU.getAccelX_mss();
   float accelY = IMU.getAccelY_mss();
@@ -82,24 +63,24 @@ void loop() {
   
   // display the data
   Serial.print("AccX: ");
-  Serial.print(accelX, 6);
+  Serial.print(accelX, 4);
   Serial.print("\tAccY: ");
-  Serial.print(accelY,6);
+  Serial.print(accelY,4);
   Serial.print("\tAccZ: ");
-  Serial.print(accelZ,6);
+  Serial.print(accelZ,4);
   Serial.print("\tMagX: ");
-  Serial.print(magX,6);
+  Serial.print(magX,4);
   Serial.print("\tMagY: ");
-  Serial.print(magY,6);
+  Serial.print(magY,4);
   Serial.print("\tMagZ: ");
-  Serial.print(magZ,6);
+  Serial.print(magZ,4);
   Serial.print("\tMgdA: ");
-  Serial.print(accelMagnitude,6);
+  Serial.print(accelMagnitude,4);
   Serial.print("\tMgdM: ");
-  Serial.print(magMagnitude,6);
+  Serial.print(magMagnitude,4);
   Serial.print("\tCosT: ");
-  Serial.print(cosTheta,6);
+  Serial.print(cosTheta,4);
   Serial.print("\tThet: ");
-  Serial.println(theta,6);
+  Serial.println(theta,4);
   delay(500);
 }
