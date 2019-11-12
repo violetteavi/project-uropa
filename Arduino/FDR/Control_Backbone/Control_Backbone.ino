@@ -1,39 +1,67 @@
 #include <TimedAction.h>
+#include <SPI.h>
 #include "PixyReader.h"
 #include "AccelerometerReader.h"
+#include "StepperController.h"
 
 // methods to be run periodically
 void updateSensors();
+void updateSteppers();
+void updateStepperSetpoint();
 void printPixyVals();
 
 // interfaces encapsulated for code hygiene
 PixyReader* pixyReader;
 AccelerometerReader* accelerometerReader;
+StepperController* stepperController;
 
 // Timers to run various control logics
+TimedAction stepperUpdateAction = TimedAction(2, updateSteppers);
 TimedAction sensorReadAction = TimedAction(30, updateSensors);
 TimedAction pixyPrintAction = TimedAction(1000, printPixyVals);
+TimedAction updateStepperSetpointAction= TimedAction(3000, updateStepperSetpoint);
  
  
 void setup(){
   Serial.begin(9600);
   Serial.println("Setup running.");
+  SPI.begin();
 
   pixyReader = new PixyReader();
   accelerometerReader = new AccelerometerReader();
+  stepperController = new StepperController(8);
   
   Serial.println("Setup finished.");
 }
 
 void loop(){
+  stepperUpdateAction.check();
   sensorReadAction.check();
   pixyPrintAction.check();
+  updateStepperSetpointAction.check();
 }
 
 void updateSensors()
 {
   pixyReader->updatePixyVals();
   accelerometerReader->updateAccelerometerVals();
+}
+
+void updateSteppers()
+{
+  stepperController->updatePulseApplication();
+}
+
+void updateStepperSetpoint()
+{
+  if(stepperController->targetStepCount == 0)
+  {
+    stepperController->targetStepCount = 2000;
+  }
+  else
+  {
+    stepperController->targetStepCount = 0;
+  }
 }
 
 void printPixyVals()
@@ -69,4 +97,3 @@ void printPixyVals()
     Serial.println("Accelerometer reading failed!");
   }
 }
-
