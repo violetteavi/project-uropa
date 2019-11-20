@@ -14,6 +14,8 @@
 */
  
 #include <TimedAction.h>
+#include "PixyReader.h"
+
 void blink();
 void physicalPixel();
 void asciiTable();
