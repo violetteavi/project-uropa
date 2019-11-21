@@ -16,80 +16,47 @@
 #include <TimedAction.h>
 #include "PixyReader.h"
 
-void blink();
-void physicalPixel();
-void asciiTable();
+// methods to be run periodically
+void updateSensors();
+void printPixyVals();
 
-//this initializes a TimedAction object that will change the state of an LED every second.
-TimedAction blinkAction                 =       TimedAction(1000,blink);
-//this initializes a TimedAction object that will change the state of an LED
-//according to the serial buffer contents, every 50 milliseconds
-TimedAction physicalPixelAction =       TimedAction(50,physicalPixel);
-//this initializes a TimedAction object that will write tha ascii table to the serial every ten seconds
-TimedAction asciiTableAction    =       TimedAction(10000,asciiTable);
- 
-//pin / state variables
-#define ledPin 13
-#define physicalPin 12
-boolean ledState = false;
+// interfaces encapsulated for code hygiene
+PixyReader pixyReader;
+
+// Timers to run various control logics
+TimedAction pixyReadAction = TimedAction(30, updateSensors);
+TimedAction pixyPrintAction = TimedAction(1000, printPixyVals);
  
  
 void setup(){
-  pinMode(ledPin,OUTPUT);
-  digitalWrite(ledPin,ledState);
-  pinMode(physicalPin, OUTPUT);
   Serial.begin(9600);
 }
- 
+
 void loop(){
-  blinkAction.check(); //trigger every second
-  physicalPixelAction.check(); //trigger every 50 millisecond
-  asciiTableAction.check(); //trigger every 10 second
+  pixyReadAction.check();
+  pixyPrintAction.check();
 }
- 
-//[url=https://arduino.cc/en/Tutorial/Blink]Examples->Digital->Blink[/url]
-void blink(){
-  ledState ? ledState=false : ledState=true;
-  digitalWrite(ledPin,ledState);
-}
- 
-//[url=https://arduino.cc/en/Tutorial/PhysicalPixel]Examples->Digital->PhysicalPixel[/url]
-void physicalPixel()
+
+void updateSensors()
 {
-  if (Serial.available()) {
-    byte val = Serial.read();
-    if (val == 'H') {
-      Serial.println("Recieved: HIGH"); 
-    }
-    if (val == 'L') {
-      Serial.println("Recieved: LOW"); 
-    }
+  pixyReader.updatePixyVals();
+}
+
+void printPixyVals()
+{
+  if(pixyReader.updatesSinceLastSuccess == 0)
+  {
+    Serial.print("Biggest bounding box had propAcross: ");
+    Serial.print(pixyReader.propAcross);
+    Serial.print("\tpropDown: ");
+    Serial.print(pixyReader.propDown);
+    Serial.print("\tmaxDim: ");
+    Serial.print(pixyReader.maxBound);
+    Serial.println();
+  }
+  else
+  {
+    Serial.println("No pixy bounding boxes found!");
   }
 }
- 
-//[url=https://arduino.cc/en/Tutorial/ASCIITable]Examples->Digital->ASCIITable[/url]
-void asciiTable()
-{
-  byte number = 33; // first visible character '!' is #33
-  // print until we have printed last visible character '~' #126 ...
-  while(number <= 126) {
-    Serial.write(number);    // prints value unaltered, first will be '!'
- 
-    Serial.print(", dec: ");
-    Serial.print(number);          // prints value as string in decimal (base 10)
-    // Serial.print(number, DEC);  // this also works
- 
-    Serial.print(", hex: ");
-    Serial.print(number, HEX);     // prints value as string in hexadecimal (base 16)
- 
-    Serial.print(", oct: ");
-    Serial.print(number, OCT);     // prints value as string in octal (base 8)
- 
-    Serial.print(", bin: ");
-    Serial.println(number, BIN);   // prints value as string in binary (base 2)
-                                                                         // also prints ending line break
-    number++; // to the next character
-  }
-  
-  asciiTableAction.disable();
-}
+

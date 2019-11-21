@@ -13,10 +13,12 @@ bool PixyReader::updatePixyVals()
     // find the largest block
     int largestBlockIndex = getLargestBlockIndex(blocksRead);
     updatePixyValsBasedOnBlock(largestBlockIndex);
+    updatesSinceLastSuccess = 0;
     return true;
   }
   else
   {
+    updatesSinceLastSuccess++;
     return false;
   }
 }
@@ -41,8 +43,10 @@ void PixyReader::updatePixyValsBasedOnBlock(int index)
 {
   float centroidX = pixy.blocks[index].x + pixy.blocks[index].width /2.0;
   propAcross = centroidX / frameWidth;
+  propAcross = max(0, min(1, propAcross));
   float centroidY = pixy.blocks[index].x + pixy.blocks[index].width /2.0;
   propDown = centroidY / frameHeight;
+  propDown = max(0, min(1, propDown));
   maxBound = max(pixy.blocks[index].width, pixy.blocks[index].height);
 }
 

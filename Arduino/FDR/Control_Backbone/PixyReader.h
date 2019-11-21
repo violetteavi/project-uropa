@@ -8,6 +8,7 @@ class PixyReader
     float propDown = 0;
     float propAcross = 0;
     float maxBound = 0;
+    int updatesSinceLastSuccess = 1000;
     // reads the bounding boxes from the pixy
     // selects the biggest, and updates the public values
     // returns success
