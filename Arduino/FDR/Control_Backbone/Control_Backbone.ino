@@ -15,6 +15,7 @@
  
 #include <TimedAction.h>
 #include "PixyReader.h"
+#include "AccelerometerReader.h"
 
 // methods to be run periodically
 void updateSensors();

@@ -1,3 +1,5 @@
+#ifndef PIXY_READER_h
+#define PIXY_READER_h
 
 #include <SPI.h>  
 #include <Pixy.h>
@@ -22,3 +24,5 @@ class PixyReader
     float frameWidth = 320;
     float frameHeight = 200;
 }; 
+
+#endif
