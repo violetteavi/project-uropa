@@ -8,6 +8,7 @@ import time
 
 print ("Pixy Python SWIG Example -- Get Blocks")
 ser = serial.Serial('/dev/ttyACM0', 9600)
+#write.timeout(2)
 ###for RPI version1, use "bus =smbus.SMBus(0)"
 ##bus = smbus.SMBus(1)
 ##
@@ -62,14 +63,31 @@ while 1:
         centroidX = blocks[index].x + blocks[index].width /2
         propAcross = centroidX * 1.0 / width
         propBottomDown = (blocks[index].y + blocks[index].height) * 1.0 / height
-        turn = 2 * propAcross - 1
+        turn = 2*propAcross - 1
+	turn = max(min(turn, 1.0), -1.0)
         forward = 2*(1-propBottomDown) - 1
+	forward = max(min(forward, 1.0), 0.0)
         print 'Turn: %f Forward: %f' % (turn, forward)
+	
+	leftMotor = 1*turn + 1*forward
+	rightMotor = -1*turn + 1*forward
+	maxMag = max(abs(leftMotor), abs(rightMotor))
+	if(maxMag > 1):
+		leftMotor = leftMotor / maxMag
+		rightMotor = rightMotor / maxMag
+	print 'Left: %f Right: %f' % (leftMotor, rightMotor)
 
-        ser.write(str(turn)+"\n")    
-        #for index in data_list:
+	leftInt = int(leftMotor * 50 + 50)
+	rightInt = int(rightMotor * 50 + 50)
+	leftInt = max(0, min(99, leftInt))
+	rightInt = max(0, min(99, rightInt))
+	transferInt = 100 * leftInt + rightInt
+	transferString = str(transferInt) + "\n"
+        ser.write(transferString)    
+        print 'Wrote to serial: %s' % (transferString)
+	#for index in data_list:
               #Sends to the Slaves
-        
+       # time.sleep(0.5)
               
         #writeNumber(int(0x0A))
         
