@@ -14,15 +14,17 @@
 // an MPU9250 object with the MPU-9250 sensor on I2C bus 0 with address 0x68
 MPU9250 IMU(Wire,0x68);
 int status;
+//int switchPin = 7;    // switch on pin 7
+
 Servo ESCL;//Left side motor
 Servo ESCR;//Right side motor
 
 void setup() {
-
+//  pinMode(switchPin, INPUT);
   // serial to display data
   Serial.begin(9600);
   ESCL.attach(10);//Left side ESC signal pin10
-  ESCR.attach(9);//Right side ESC signal pin9
+  ESCR.attach(11);//Right side ESC signal pin9
   while(!Serial) {}
 
   // start communication with IMU 
@@ -53,23 +55,29 @@ void setup() {
 void loop() {
   // read the sensor
   //You should set more than ESCL.write(50) to run continuously
+//  if(switchPin==1){
+//  ESCL.write(60);
+//  ESCR.write(60);
+//  }
+//  else
+//  ESCL.write(55);
+//  ESCR.write(55);
   while(IMU.readSensor()){
-  ESCL.write(90);
-  ESCR.write(90);
+  
   //Case:1
     if (IMU.getAccelX_mss()<=-1.5){
-    ESCL.write(150); 
+    ESCL.write(90); 
   }
   //Case:2
     else if (IMU.getAccelX_mss()>=1){
-    ESCR.write(150);
+    ESCR.write(90);
   }
   delay(500);
-  }
+  
 
   
 //  // display the data
-//  Serial.print(IMU.getAccelX_mss(),6);
+  Serial.println(IMU.getAccelX_mss(),6);
 //  Serial.print("\t");
 //  Serial.print(IMU.getAccelY_mss(),6);
 //  Serial.print("\t");
@@ -89,4 +97,5 @@ void loop() {
 //  Serial.print("\t");
 //  Serial.println(IMU.getTemperature_C(),6);
 //  delay(20);
+  }
 }

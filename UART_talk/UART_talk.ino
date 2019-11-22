@@ -23,14 +23,23 @@ void setup() {
 //Initializing two motor power as 0 at the beginning  
   ESCL.write(0);
   ESCR.write(0);
+  // delay(500);
+  
+  /// ESCL.write(60);
+  // ESCR.write(60);
+  // delay(2000);
+
+  // ESCL.write(0);
+  // ESCL.write(0);
+  
   Serial.println("Ready");
 }
 
 void loop(){
   float f;
-  if(Serial.available() && IMU.readSensor() ){
+  if(Serial.available() || IMU.readSensor() ){
      
-   f = Serial.parseFloat();
+   //f = Serial.parseFloat();
 
     Serial.print("Camera Turning");
      Serial.print("\t");
@@ -44,13 +53,17 @@ void loop(){
         }
   //Case:1
          if (IMU.getAccelX_mss()<=-1.5){
-            ESCL.write(90); 
+            ESCL.write(100); 
             }
   //Case:2
          else if (IMU.getAccelX_mss()>=1){
-                 ESCR.write(90);
+                 ESCR.write(100);
              }
+
+             
   delay(500);
+
+  
   }
   }
   
