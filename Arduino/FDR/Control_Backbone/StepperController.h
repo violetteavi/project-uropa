@@ -14,7 +14,7 @@ class StepperController
     StepperController(uint8_t CSPin);
   private:
     HighPowerStepperDriver driver;
-    const int DEAD_ZONE = 3;
+    const int DEAD_ZONE = 0;
     void setDirectionIfNecessary(bool forward);
 }; 
 

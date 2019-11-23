@@ -12,24 +12,32 @@ void printPixyVals();
 
 // interfaces encapsulated for code hygiene
 PixyReader* pixyReader;
-AccelerometerReader* accelerometerReader;
-StepperController* stepperController;
+//AccelerometerReader* accelerometerReader;
+StepperController* stepperController1;
+StepperController* stepperController2;
+StepperController* stepperController3;
 
 // Timers to run various control logics
 TimedAction stepperUpdateAction = TimedAction(2, updateSteppers);
 TimedAction sensorReadAction = TimedAction(30, updateSensors);
 TimedAction pixyPrintAction = TimedAction(1000, printPixyVals);
-TimedAction updateStepperSetpointAction= TimedAction(3000, updateStepperSetpoint);
+TimedAction updateStepperSetpointAction= TimedAction(1000, updateStepperSetpoint);
  
  
 void setup(){
   Serial.begin(9600);
   Serial.println("Setup running.");
   SPI.begin();
+  Serial.println("SPI Active.");
 
   pixyReader = new PixyReader();
-  accelerometerReader = new AccelerometerReader();
-  stepperController = new StepperController(8);
+  Serial.println("Pixy Active.");
+  //accelerometerReader = new AccelerometerReader();
+  //Serial.println("Accelerometer Active.");
+  stepperController1 = new StepperController(9);
+  stepperController2 = new StepperController(10);
+  stepperController3 = new StepperController(11);
+  Serial.println("Stepper Driver Active.");
   
   Serial.println("Setup finished.");
 }
@@ -44,23 +52,29 @@ void loop(){
 void updateSensors()
 {
   pixyReader->updatePixyVals();
-  accelerometerReader->updateAccelerometerVals();
+  //accelerometerReader->updateAccelerometerVals();
 }
 
 void updateSteppers()
 {
-  stepperController->updatePulseApplication();
+  stepperController1->updatePulseApplication();
+  stepperController2->updatePulseApplication();
+  stepperController3->updatePulseApplication();
 }
 
 void updateStepperSetpoint()
 {
-  if(stepperController->targetStepCount == 0)
+  if(stepperController1->targetStepCount == 0)
   {
-    stepperController->targetStepCount = 2000;
+    stepperController1->targetStepCount = 200;
+    stepperController2->targetStepCount = 200;
+    stepperController3->targetStepCount = 200;
   }
   else
   {
-    stepperController->targetStepCount = 0;
+    stepperController1->targetStepCount = 0;
+    stepperController2->targetStepCount = 0;
+    stepperController3->targetStepCount = 0;
   }
 }
 
@@ -81,7 +95,7 @@ void printPixyVals()
     Serial.println("No pixy bounding boxes found!");
   }
 
-  
+  /*
   if(!accelerometerReader->errorFlag)
   {
     Serial.print("Acceleromater yields\tpitchAngle: ");
@@ -96,4 +110,5 @@ void printPixyVals()
   {
     Serial.println("Accelerometer reading failed!");
   }
+  */
 }

@@ -30,17 +30,19 @@ StepperController::StepperController(uint8_t CSPin)
 bool StepperController::updatePulseApplication()
 {
   int positionError = currentStepCount - targetStepCount;
-  if(abs(positionError) < DEAD_ZONE) return false;
+  if(abs(positionError) <= DEAD_ZONE) return false;
   if(positionError < 0)
   {
     setDirectionIfNecessary(true);
     driver.step();
+    currentStepCount++;
     return true;
   }
   if(positionError > 0)
   {
     setDirectionIfNecessary(false);
     driver.step();
+    currentStepCount--;
     return true;
   }
 }
@@ -48,13 +50,12 @@ bool StepperController::updatePulseApplication()
 
 void StepperController::setDirectionIfNecessary(bool forward)
 {
-  int currentDirection = driver.getDirection();
   if(forward)
   {
-    if(currentDirection != 1) driver.setDirection(1);
+    driver.setDirection(1);
   }
   else
   {
-    if(currentDirection != 0) driver.setDirection(0);
+    driver.setDirection(0);
   }
 }
