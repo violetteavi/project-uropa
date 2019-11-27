@@ -2,13 +2,23 @@
 
 PropellerController::PropellerController(int drivePin)
 {
-  ESC* controller = new ESC(drivePin, PWM_MAXB, PWM_MAXF, PWM_STOP);
+  controller = new ESC(18, 1300, 1700, 500);
+  //delay(2000);
+  controller->arm();
+  delay(1000);
+  controller->speed(PWM_STOP);
+  delay(1000);
+  controller->speed(PWM_MAXB);
+  delay(1000);
+  controller->speed(PWM_MAXF);
+  delay(1000);
+  controller->speed(PWM_STOP);
   lastUpdateMillis = -1;
 }
 
 bool PropellerController::updateVelocity()
 {
-  float setpoint = max(0, min(1, targetProportion));
+  float setpoint = max(-1, min(1, targetProportion));
   if(setpoint == currentProportion) 
   {
     lastUpdateMillis = -1;
@@ -17,6 +27,7 @@ bool PropellerController::updateVelocity()
   float slowedSetpoint = calculateSlowedSetpoint(setpoint, currentProportion);
   int pwmSetpoint = proportionToPWM(slowedSetpoint);
   controller->speed(pwmSetpoint);
+  currentProportion = slowedSetpoint;
   lastUpdateMillis = millis();
   return true;
 }
@@ -30,11 +41,11 @@ float PropellerController::calculateSlowedSetpoint(float setpoint, float current
   {
     if(setpointDifference > 0)
     {
-      setpoint = current + allowableDifference;
+      slowedSetpoint = current + allowableDifference;
     }
     if(setpointDifference < 0)
     {
-      setpoint = current - allowableDifference;
+      slowedSetpoint = current - allowableDifference;
     }
   }
   return slowedSetpoint;
@@ -55,7 +66,7 @@ float PropellerController::maxAllowablePropDifference(int lastMillis)
 
 int PropellerController::proportionToPWM(float proportion)
 {
-  proportion = max(0, min(1, proportion));
+  proportion = max(-1, min(1, proportion));
   if(proportion > 0)
   {
     int pwmF = (int)(proportion*(PWM_MAXF-PWM_MINF) + PWM_MINF);

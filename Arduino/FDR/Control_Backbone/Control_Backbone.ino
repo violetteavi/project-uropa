@@ -3,12 +3,16 @@
 #include "PixyReader.h"
 #include "AccelerometerReader.h"
 #include "StepperController.h"
+#include "PropellerController.h"
+//#include <ESC.h>
 
 // methods to be run periodically
 void updateSensors();
 void updateSteppers();
 void updateStepperSetpoint();
 void printPixyVals();
+void updateProps();
+void updatePropSetpoint();
 
 // interfaces encapsulated for code hygiene
 PixyReader* pixyReader;
@@ -16,37 +20,45 @@ PixyReader* pixyReader;
 StepperController* stepperController1;
 StepperController* stepperController2;
 StepperController* stepperController3;
+PropellerController* rightProp;
+PropellerController* leftProp;
 
 // Timers to run various control logics
 TimedAction stepperUpdateAction = TimedAction(2, updateSteppers);
 TimedAction sensorReadAction = TimedAction(30, updateSensors);
+TimedAction updatePropAction = TimedAction(10, updateProps);
 TimedAction pixyPrintAction = TimedAction(1000, printPixyVals);
 TimedAction updateStepperSetpointAction= TimedAction(1000, updateStepperSetpoint);
+TimedAction updatePropSetpointAction= TimedAction(6000, updatePropSetpoint);
  
  
 void setup(){
   Serial.begin(9600);
-  Serial.println("Setup running.");
-  SPI.begin();
-  Serial.println("SPI Active.");
+  //Serial.println("Setup running.");
+  //SPI.begin();
+  //Serial.println("SPI Active.");
 
-  pixyReader = new PixyReader();
-  Serial.println("Pixy Active.");
+  //pixyReader = new PixyReader();
+  //Serial.println("Pixy Active.");
   //accelerometerReader = new AccelerometerReader();
   //Serial.println("Accelerometer Active.");
+  /*
   stepperController1 = new StepperController(9);
   stepperController2 = new StepperController(10);
   stepperController3 = new StepperController(11);
   Serial.println("Stepper Driver Active.");
-  
+  */
+  rightProp = new PropellerController(18);
   Serial.println("Setup finished.");
 }
 
 void loop(){
-  stepperUpdateAction.check();
-  sensorReadAction.check();
-  pixyPrintAction.check();
-  updateStepperSetpointAction.check();
+  //stepperUpdateAction.check();
+  //sensorReadAction.check();
+  //pixyPrintAction.check();
+  //updateStepperSetpointAction.check();
+  updatePropAction.check();
+  updatePropSetpointAction.check();
 }
 
 void updateSensors()
@@ -78,15 +90,35 @@ void updateStepperSetpoint()
   }
 }
 
+void updateProps()
+{
+  //leftProp->updateVelocity();
+  rightProp->updateVelocity();
+}
+
+void updatePropSetpoint()
+{
+  if(rightProp->targetProportion != 0.4)
+  {
+    //leftProp->targetProportion = 1;
+    rightProp->targetProportion = 0.4;
+  }
+  else
+  {
+    //leftProp->targetProportion = -1;
+    rightProp->targetProportion = -0.4;
+  }
+}
+
 void printPixyVals()
 {
   if(pixyReader->updatesSinceLastSuccess == 0)
   {
-    Serial.print("Biggest bounding box had propAcross: ");
+    Serial.print("Biggest bounding box had propAcross:\t");
     Serial.print(pixyReader->propAcross);
-    Serial.print("\tpropDown: ");
+    Serial.print("\tpropDown:\t");
     Serial.print(pixyReader->propDown);
-    Serial.print("\tmaxDim: ");
+    Serial.print("\tmaxDim:\t");
     Serial.print(pixyReader->maxBound);
     Serial.println();
   }
