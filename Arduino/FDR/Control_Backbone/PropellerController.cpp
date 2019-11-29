@@ -2,18 +2,28 @@
 
 PropellerController::PropellerController(int drivePin)
 {
-  controller = new ESC(18, 1300, 1700, 500);
-  //delay(2000);
+  controller = new ESC(18, PWM_MAXB, PWM_MAXF, 500);
   controller->arm();
   delay(1000);
-  controller->speed(PWM_STOP);
+  targetProportion = 1;
+  while(updateVelocity())
+  {
+    delay(10);
+  }
   delay(1000);
-  controller->speed(PWM_MAXB);
+  targetProportion = -1;
+  while(updateVelocity())
+  {
+    delay(10);
+  }
   delay(1000);
-  controller->speed(PWM_MAXF);
-  delay(1000);
-  controller->speed(PWM_STOP);
+  targetProportion = 0;
+  while(updateVelocity())
+  {
+    delay(10);
+  }
   lastUpdateMillis = -1;
+  
 }
 
 bool PropellerController::updateVelocity()
@@ -69,13 +79,13 @@ int PropellerController::proportionToPWM(float proportion)
   proportion = max(-1, min(1, proportion));
   if(proportion > 0)
   {
-    int pwmF = (int)(proportion*(PWM_MAXF-PWM_MINF) + PWM_MINF);
+    int pwmF = (int)(proportion*(PWM_MAXF-PWM_STOP) + PWM_STOP);
     return pwmF;
   }
   else if(proportion < 0)
   {
     proportion *= -1;
-    int pwmB = (int)(proportion*(PWM_MAXB-PWM_MINB) + PWM_MINB);
+    int pwmB = (int)(proportion*(PWM_MAXB-PWM_STOP) + PWM_STOP);
     return pwmB;
   }
   else
