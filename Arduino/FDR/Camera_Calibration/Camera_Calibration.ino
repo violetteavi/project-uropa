@@ -11,7 +11,7 @@ PixyReader* pixyReader;
 
 // Timers to run various control logics
 TimedAction sensorReadAction = TimedAction(30, updateSensors);
-TimedAction pixyPrintAction = TimedAction(1000, printPixyVals);
+TimedAction pixyPrintAction = TimedAction(60, printPixyVals);
  
  
 void setup(){
@@ -40,12 +40,20 @@ void printPixyVals()
 {
   if(pixyReader->updatesSinceLastSuccess == 0)
   {
-    Serial.print("Biggest bounding box had propAcross:\t");
+    Serial.print("propAcross:\t");
     Serial.print(pixyReader->propAcross);
     Serial.print("\tpropDown:\t");
     Serial.print(pixyReader->propDown);
     Serial.print("\tmaxDim:\t");
     Serial.print(pixyReader->maxBound);
+    Serial.print("\tx:\t");
+    Serial.print(pixyReader->latestBlock.x);
+    Serial.print("\ty:\t");
+    Serial.print(pixyReader->latestBlock.y);
+    Serial.print("\twid:\t");
+    Serial.print(pixyReader->latestBlock.width);
+    Serial.print("\thei:\t");
+    Serial.print(pixyReader->latestBlock.height);
     Serial.println();
   }
 }

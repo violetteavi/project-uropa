@@ -7,6 +7,7 @@
 class PixyReader 
 { 
   public: 
+    Block latestBlock = {0};
     float propDown = 0;
     float propAcross = 0;
     float maxBound = 0;
