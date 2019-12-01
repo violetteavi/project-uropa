@@ -46,6 +46,9 @@ void printPixyVals()
     Serial.print(pixyReader->propDown);
     Serial.print("\tmaxDim:\t");
     Serial.print(pixyReader->maxBound);
+    Serial.print("\tDist:\t");
+    Serial.print(pixyReader->distAway);
+    /*
     Serial.print("\tx:\t");
     Serial.print(pixyReader->latestBlock.x);
     Serial.print("\ty:\t");
@@ -54,6 +57,7 @@ void printPixyVals()
     Serial.print(pixyReader->latestBlock.width);
     Serial.print("\thei:\t");
     Serial.print(pixyReader->latestBlock.height);
+    */
     Serial.println();
   }
 }

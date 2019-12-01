@@ -49,5 +49,6 @@ void PixyReader::updatePixyValsBasedOnBlock(int index)
   propDown = centroidY / frameHeight;
   propDown = max(0, min(1, propDown));
   maxBound = max(pixy.blocks[index].width, pixy.blocks[index].height);
+  distAway = pixelWidthAt1Ft / maxBound;
 }
 
