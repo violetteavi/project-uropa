@@ -18,9 +18,9 @@ class StepperController
     const int TRAVEL_LENGTH_STEPS = 10000;
     void setDirectionIfNecessary(bool forward);
 
-    private int chipSelect;
-    private int bottomSwitch;
-    private int topSwitch
+    int chipSelect;
+    int bottomSwitch;
+    int topSwitch;
 }; 
 
 #endif
