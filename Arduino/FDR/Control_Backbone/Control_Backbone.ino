@@ -20,33 +20,29 @@ AccelerometerReader* accelerometerReader;
 StepperController* stepperController1;
 StepperController* stepperController2;
 StepperController* stepperController3;
-//StepperController* stepperController4;
+PropellerController* rightProp;
+PropellerController* leftProp;
 
 // Timers to run various control logics
 TimedAction stepperUpdateAction = TimedAction(2, updateSteppers);
-TimedAction sensorReadAction = TimedAction(300, updateSensors);
+TimedAction sensorReadAction = TimedAction(30, updateSensors);
+TimedAction updatePropAction = TimedAction(10, updateProps);
 TimedAction pixyPrintAction = TimedAction(1000, printPixyVals);
-TimedAction updateStepperSetpointAction= TimedAction(2000, updateStepperSetpoint);
+TimedAction updateStepperSetpointAction= TimedAction(1000, updateStepperSetpoint);
+TimedAction updatePropSetpointAction= TimedAction(6000, updatePropSetpoint);
  
  
 void setup(){
   Serial.begin(9600);
-  Serial.println("Setup running.");
-  
-  Wire.begin();
-  accelerometerReader = new AccelerometerReader(Wire, 0x69);
-  if(accelerometerReader->errorStatus < 0)
-  {
-    Serial.print("Accelerometer initialization failed! Status: ");
-    Serial.println(accelerometerReader->errorStatus);
-  }
-  else
-  {
-    Serial.println("Accelerometer Active.");
-  }
+  //Serial.println("Setup running.");
+  //SPI.begin();
+  //Serial.println("SPI Active.");
 
-  SPI.begin();
-  Serial.println("SPI Active.");
+  //pixyReader = new PixyReader();
+  //Serial.println("Pixy Active.");
+  //accelerometerReader = new AccelerometerReader();
+  //Serial.println("Accelerometer Active.");
+  /*
   stepperController1 = new StepperController(9);
   delay(100);
   stepperController2 = new StepperController(10);
@@ -55,9 +51,8 @@ void setup(){
   delay(100);
   //stepperController4 = new StepperController(12);
   Serial.println("Stepper Driver Active.");
-  //pixyReader = new PixyReader();
-  //Serial.println("Pixy Active.");
-  
+  */
+  rightProp = new PropellerController(18);
   Serial.println("Setup finished.");
   delay(2000);
 }
@@ -156,5 +151,5 @@ void printPixyVals()
     Serial.print("Accelerometer reading failed! Status: ");
     Serial.println(accelerometerReader->errorStatus);
   }
-  
+  */
 }

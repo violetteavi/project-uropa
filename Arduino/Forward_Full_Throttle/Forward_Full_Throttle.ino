@@ -17,8 +17,8 @@ double powerProportion = 0.4;
 
 //MPU9250 IMU(Wire,0x68);
 
-ESC myESCL (11, PWM_MAXB, PWM_MAXF, 1500);//Left side motor
-ESC myESCR (12, PWM_MAXB, PWM_MAXF, 1500);//Right side motor
+ESC myESCL (19, PWM_MAXB, PWM_MAXF, 500);//Left side motor
+ESC myESCR (18, PWM_MAXB, PWM_MAXF, 500);//Right side motor
 
 int period = 3000;
 bool enabled = false;
@@ -41,7 +41,7 @@ void setup() {
 
 void loop(){
   bool prevEnabled = enabled;
-  enabled = false;//(digitalRead(enablePin) == HIGH); //
+  enabled = true;//(digitalRead(enablePin) == HIGH); //
   if(enabled and !prevEnabled)
   {
       state = 0;
@@ -53,13 +53,13 @@ void loop(){
     switch(state)
     {
       case 0:
-        //setMotorSpeeds(powerProportion, powerProportion);
+        setMotorSpeeds(powerProportion, powerProportion);
         break;
       case 1:
-        //setMotorSpeeds(-powerProportion, -powerProportion);
+        setMotorSpeeds(-powerProportion, -powerProportion);
         break;
       case 2:
-        //setMotorSpeeds(0, 0);
+        setMotorSpeeds(0, 0);
         break;
     }
     
