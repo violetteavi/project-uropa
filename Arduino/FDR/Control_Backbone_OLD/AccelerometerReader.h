@@ -15,10 +15,10 @@ class AccelerometerReader
     float downAcceleration = 9.8;
     
     bool updateAccelerometerVals();
-    AccelerometerReader(uint8_t address=0x68);
+    AccelerometerReader(TwoWire &bus, uint8_t busAddress);
     ~AccelerometerReader();
     
-    bool errorFlag = false;
+    int errorStatus;
   private:
     // an MPU9250 object with the MPU-9250 sensor on I2C bus 0 with address 0x68
     MPU9250* IMU;
