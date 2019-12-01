@@ -11,11 +11,16 @@ class StepperController
     float currentStepCount = 0;
     
     bool updatePulseApplication(); 
-    StepperController(uint8_t CSPin);
+    StepperController(uint8_t CSPin, int bottomSwitchPin, int topSwitchPin);
   private:
     HighPowerStepperDriver driver;
     const int DEAD_ZONE = 0;
+    const int TRAVEL_LENGTH_STEPS = 10000;
     void setDirectionIfNecessary(bool forward);
+
+    private int chipSelect;
+    private int bottomSwitch;
+    private int topSwitch
 }; 
 
 #endif

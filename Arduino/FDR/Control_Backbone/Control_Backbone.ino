@@ -42,12 +42,10 @@ void setup(){
   //Serial.println("Pixy Active.");
   //accelerometerReader = new AccelerometerReader();
   //Serial.println("Accelerometer Active.");
-  /*
-  stepperController1 = new StepperController(9);
-  stepperController2 = new StepperController(10);
-  stepperController3 = new StepperController(11);
+  stepperController1 = new StepperController(9, 4, 6);
+  stepperController2 = new StepperController(10, 3, 5);
+  //stepperController3 = new StepperController(11);
   Serial.println("Stepper Driver Active.");
-  */
   rightProp = new PropellerController(18);
   Serial.println("Setup finished.");
 }
