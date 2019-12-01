@@ -1,13 +1,13 @@
 #include <SPI.h>
 #include <HighPowerStepperDriver.h>
 
-const uint8_t CSPin = 8;
-
+const uint8_t CSPin1 = 10;
+const uint8_t CSPin = 9;
 // This period is the length of the delay between steps, which controls the
 // stepper motor's speed.  You can increase the delay to make the stepper motor
 // go slower.  If you decrease the delay, the stepper motor will go faster, but
 // there is a limit to how fast it can go before it starts missing steps.
-const uint16_t StepPeriodUs = 2000;
+const uint16_t StepPeriodUs = 3000;
 
 HighPowerStepperDriver sd;
 
@@ -15,7 +15,7 @@ void setup()
 {
   SPI.begin();
   sd.setChipSelectPin(CSPin);
-
+  sd.setChipSelectPin(CSPin1);
   // Give the driver some time to power up.
   delay(2);
 
