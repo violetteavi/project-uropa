@@ -1,6 +1,6 @@
 #include "StepperController.h"
 
-StepperController::StepperController(uint8_t CSPin)
+StepperController::StepperController(uint8_t CSPin, int bottomSwitchPin, int topSwitchPin)
 {
   driver.setChipSelectPin(CSPin);
 
@@ -25,12 +25,20 @@ StepperController::StepperController(uint8_t CSPin)
 
   // Enable the motor outputs.
   driver.enableDriver();
+
+  pinMode(bottomSwitchPin, INPUT);
+  pinMode(topSwitchPin, INPUT);
+  chipSelect = CSPin;
+  bottomSwitch = bottomSwitchPin;
+  topSwitch = topSwitchPin;
 }
 
 bool StepperController::updatePulseApplication()
 {
   int positionError = currentStepCount - targetStepCount;
   if(abs(positionError) <= DEAD_ZONE) return false;
+  bool switchHit = digitalRead(bottomSwitch) == HIGH || digitalRead(topSwitch) == HIGH;
+  if(switchHit) return false;
   if(positionError < 0)
   {
     setDirectionIfNecessary(true);
@@ -52,10 +60,10 @@ void StepperController::setDirectionIfNecessary(bool forward)
 {
   if(forward)
   {
-    if(driver.getDirection() != 1) driver.setDirection(1);
+    driver.setDirection(1);
   }
   else
   {
-    if(driver.getDirection() != 0) driver.setDirection(0);
+    driver.setDirection(0);
   }
 }
