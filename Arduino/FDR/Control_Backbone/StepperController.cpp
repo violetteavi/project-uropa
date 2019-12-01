@@ -52,10 +52,10 @@ void StepperController::setDirectionIfNecessary(bool forward)
 {
   if(forward)
   {
-    driver.setDirection(1);
+    if(driver.getDirection() != 1) driver.setDirection(1);
   }
   else
   {
-    driver.setDirection(0);
+    if(driver.getDirection() != 0) driver.setDirection(0);
   }
 }

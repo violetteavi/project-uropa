@@ -1,13 +1,10 @@
 #include "AccelerometerReader.h"
 
-AccelerometerReader::AccelerometerReader(uint8_t address)
+AccelerometerReader::AccelerometerReader(TwoWire &bus, uint8_t busAddress)
 {
-  IMU = new MPU9250(Wire, address);
-  int status = IMU->begin();
-  if (status < 0) {
-    errorFlag = true;
-  }
-  else {
+  IMU = new MPU9250(bus, busAddress);
+  errorStatus = IMU->begin();
+  if (errorStatus >= 0) {
     // setting the accelerometer full scale range to +/-8G 
     IMU->setAccelRange(MPU9250::ACCEL_RANGE_8G);
     // setting the gyroscope full scale range to +/-500 deg/s
@@ -22,12 +19,13 @@ AccelerometerReader::~AccelerometerReader() {  delete IMU; }
 
 bool AccelerometerReader::updateAccelerometerVals()
 {
-  int status = IMU->readSensor();
-  if (status < 0) {
-    errorFlag = true;
+  //noInterrupts();
+  errorStatus = IMU->readSensor();
+  //interrupts();
+  if (errorStatus < 0) {
     return false;
   }
-  
+
   float accelXRobot = IMU->getAccelX_mss();
   float accelYRobot = IMU->getAccelZ_mss();
   float accelZRobot = IMU->getAccelY_mss();
@@ -35,8 +33,8 @@ bool AccelerometerReader::updateAccelerometerVals()
   bool successfulPitch = updatePitchAngle(accelZRobot);
   bool successfulRoll = updateRollAngle(accelXRobot);
   downAcceleration = accelYRobot;
-  
-  if(successfulPitch && successfulRoll) errorFlag = false;
+
+  if(successfulPitch && successfulRoll) errorStatus = 0;
   return successfulPitch && successfulRoll;
 }
 
@@ -45,7 +43,7 @@ bool AccelerometerReader::updatePitchAngle(float accelZ)
   float nonDimZ = accelZ/gravity;
   if(nonDimZ < - 1 || 1 < nonDimZ)
   {
-    errorFlag = true;
+    errorStatus = -100;
     return false;
   }
   pitchAngle = asin(nonDimZ);
@@ -57,10 +55,9 @@ bool AccelerometerReader::updateRollAngle(float accelX)
   float nonDimX = accelX/gravity;
   if(nonDimX < - 1 || 1 < nonDimX)
   {
-    errorFlag = true;
+    errorStatus = -200;
     return false;
   }
   rollAngle = asin(nonDimX);
   return true;
 }
-
