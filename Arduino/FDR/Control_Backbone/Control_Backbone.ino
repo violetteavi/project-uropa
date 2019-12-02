@@ -61,7 +61,6 @@ void setup(){
 }
 
 void loop(){
-  int updateCount = 0;
   while(true)
   {
     updateSteppers();
@@ -71,11 +70,6 @@ void loop(){
     //updatePropAction.check();
     //updatePropSetpointAction.check();
     delayMicroseconds(stepperDelayUs);
-    updateCount++;
-    if(updateCount % 10 == 0)
-    {
-      updateCount = 0;
-    }
   }
 }
 
