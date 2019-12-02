@@ -2,10 +2,12 @@
 
 StepperController::StepperController(uint8_t CSPin, int bottomSwitchPin, int topSwitchPin)
 {
+  Serial.println("Initializing stepper controller.");
   driver.setChipSelectPin(CSPin);
 
   // Give the driver some time to power up.
   delay(2);
+  Serial.println("Stepper initialized.");
 
   // Reset the driver to its default settings and clear latched status
   // conditions.
@@ -14,7 +16,7 @@ StepperController::StepperController(uint8_t CSPin, int bottomSwitchPin, int top
 
   // Select auto mixed decay.  TI's DRV8711 documentation recommends this mode
   // for most applications, and we find that it usually works well.
-  //sd.setDecayMode(HPSDDecayMode::AutoMixed);
+  driver.setDecayMode(HPSDDecayMode::AutoMixed);
 
   // Set the current limit. You should change the number here to an appropriate
   // value for your particular system.
@@ -23,14 +25,20 @@ StepperController::StepperController(uint8_t CSPin, int bottomSwitchPin, int top
   // Set the number of microsteps that correspond to one full step.
   driver.setStepMode(HPSDStepMode::MicroStep1);
 
+  // Set the default direction to forward
+  driver.setDirection(1);
+
+  Serial.println("Stepper settings sent.");
   // Enable the motor outputs.
   driver.enableDriver();
+  Serial.println("Stepper enabled.");
 
   pinMode(bottomSwitchPin, INPUT);
   pinMode(topSwitchPin, INPUT);
   chipSelect = CSPin;
   bottomSwitch = bottomSwitchPin;
   topSwitch = topSwitchPin;
+  Serial.println("Stepper limit switches enabled.");
 }
 
 bool StepperController::updatePulseApplication()
@@ -60,10 +68,16 @@ void StepperController::setDirectionIfNecessary(bool forward)
 {
   if(forward)
   {
-    driver.setDirection(1);
+    if(driver.getDirection() != 1) 
+    {
+      driver.setDirection(1);
+    }
   }
   else
   {
-    driver.setDirection(0);
+    if(driver.getDirection() != 0) 
+    {
+      driver.setDirection(0);
+    }
   }
 }

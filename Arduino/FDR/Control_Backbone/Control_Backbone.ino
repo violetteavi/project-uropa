@@ -24,20 +24,20 @@ PropellerController* rightProp;
 PropellerController* leftProp;
 
 // Timers to run various control logics
-TimedAction stepperUpdateAction = TimedAction(2, updateSteppers);
+int stepperDelayUs = 1500;
 TimedAction sensorReadAction = TimedAction(30, updateSensors);
-TimedAction updatePropAction = TimedAction(10, updateProps);
+TimedAction updatePropAction = TimedAction(30, updateProps);
 TimedAction pixyPrintAction = TimedAction(1000, printPixyVals);
-TimedAction updateStepperSetpointAction= TimedAction(1000, updateStepperSetpoint);
+TimedAction updateStepperSetpointAction= TimedAction(3000, updateStepperSetpoint);
 TimedAction updatePropSetpointAction= TimedAction(6000, updatePropSetpoint);
  
  
 void setup(){
   Serial.begin(9600);
-  //Serial.println("Setup running.");
-  //SPI.begin();
-  //Serial.println("SPI Active.");
-
+  Serial.println("Setup running.");
+  SPI.begin();
+  Serial.println("SPI Active.");
+ 
   //pixyReader = new PixyReader();
   //Serial.println("Pixy Active.");
   //accelerometerReader = new AccelerometerReader();
@@ -45,8 +45,10 @@ void setup(){
   ///*
   stepperController1 = new StepperController(9,4,6);
   delay(100);
+  Serial.println("Stepper 1 active.");
   stepperController2 = new StepperController(10,3,5);
   delay(100);
+  Serial.println("Stepper 2 active.");
   /*
   stepperController3 = new StepperController(11);
   delay(100);
@@ -59,12 +61,22 @@ void setup(){
 }
 
 void loop(){
-  stepperUpdateAction.check();
-  //sensorReadAction.check();
-  //pixyPrintAction.check();
-  updateStepperSetpointAction.check();
-  //updatePropAction.check();
-  //updatePropSetpointAction.check();
+  int updateCount = 0;
+  while(true)
+  {
+    updateSteppers();
+    //sensorReadAction.check();
+    //pixyPrintAction.check();
+    updateStepperSetpointAction.check();
+    //updatePropAction.check();
+    //updatePropSetpointAction.check();
+    delayMicroseconds(stepperDelayUs);
+    updateCount++;
+    if(updateCount % 10 == 0)
+    {
+      updateCount = 0;
+    }
+  }
 }
 
 void updateSensors()
@@ -85,8 +97,8 @@ void updateStepperSetpoint()
 {
   if(stepperController1->targetStepCount == 0)
   {
-    stepperController1->targetStepCount = 400;
-    stepperController2->targetStepCount = 400;
+    stepperController1->targetStepCount = 1000;
+    stepperController2->targetStepCount = 1000;
     //stepperController3->targetStepCount = -400;
     //stepperController4->targetStepCount = 400;
   }
@@ -97,6 +109,7 @@ void updateStepperSetpoint()
     //stepperController3->targetStepCount = 0;
     //stepperController4->targetStepCount = 0;
   }
+  Serial.println("Stepper setpoints updated!");
 }
 
 void updateProps()
