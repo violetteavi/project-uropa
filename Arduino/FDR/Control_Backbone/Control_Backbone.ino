@@ -42,11 +42,12 @@ void setup(){
   //Serial.println("Pixy Active.");
   //accelerometerReader = new AccelerometerReader();
   //Serial.println("Accelerometer Active.");
-  /*
+  ///*
   stepperController1 = new StepperController(9);
   delay(100);
   stepperController2 = new StepperController(10);
   delay(100);
+  /*
   stepperController3 = new StepperController(11);
   delay(100);
   //stepperController4 = new StepperController(12);
@@ -58,12 +59,12 @@ void setup(){
 }
 
 void loop(){
-  //stepperUpdateAction.check();
+  stepperUpdateAction.check();
   //sensorReadAction.check();
   //pixyPrintAction.check();
-  //updateStepperSetpointAction.check();
-  updatePropAction.check();
-  updatePropSetpointAction.check();
+  updateStepperSetpointAction.check();
+  //updatePropAction.check();
+  //updatePropSetpointAction.check();
 }
 
 void updateSensors()
@@ -76,7 +77,7 @@ void updateSteppers()
 {
   stepperController1->updatePulseApplication();
   stepperController2->updatePulseApplication();
-  stepperController3->updatePulseApplication();
+  //stepperController3->updatePulseApplication();
   //stepperController4->updatePulseApplication();
 }
 
@@ -86,14 +87,14 @@ void updateStepperSetpoint()
   {
     stepperController1->targetStepCount = 400;
     stepperController2->targetStepCount = 400;
-    stepperController3->targetStepCount = -400;
+    //stepperController3->targetStepCount = -400;
     //stepperController4->targetStepCount = 400;
   }
   else
   {
     stepperController1->targetStepCount = 0;
     stepperController2->targetStepCount = 0;
-    stepperController3->targetStepCount = 0;
+    //stepperController3->targetStepCount = 0;
     //stepperController4->targetStepCount = 0;
   }
 }
@@ -151,5 +152,5 @@ void printPixyVals()
     Serial.print("Accelerometer reading failed! Status: ");
     Serial.println(accelerometerReader->errorStatus);
   }
-  */
+//  */
 }
