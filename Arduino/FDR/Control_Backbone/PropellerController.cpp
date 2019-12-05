@@ -2,7 +2,7 @@
 
 PropellerController::PropellerController(int drivePin)
 {
-  controller = new ESC(18, PWM_MAXB, PWM_MAXF, 500);
+  controller = new ESC(22, PWM_MAXB, PWM_MAXF, 500);
   controller->arm();
   delay(1000);
   targetProportion = 1;

@@ -30,6 +30,7 @@ void setup() {
     Serial.println(status);
     while(1) {}
   }
+  Serial.println('Hello');
   // setting the accelerometer full scale range to +/-8G 
   IMU.setAccelRange(MPU9250::ACCEL_RANGE_8G);
   // setting the gyroscope full scale range to +/-500 deg/s

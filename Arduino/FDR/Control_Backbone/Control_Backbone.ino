@@ -4,7 +4,7 @@
 #include "AccelerometerReader.h"
 #include "StepperController.h"
 #include "PropellerController.h"
-//#include <ESC.h>
+#include <ESC.h>
 
 // methods to be run periodically
 void updateSensors();
@@ -16,10 +16,11 @@ void updatePropSetpoint();
 
 // interfaces encapsulated for code hygiene
 PixyReader* pixyReader;
-AccelerometerReader* accelerometerReader;
+//AccelerometerReader* accelerometerReader;
 StepperController* stepperController1;
 StepperController* stepperController2;
 StepperController* stepperController3;
+StepperController* stepperController4;
 PropellerController* rightProp;
 PropellerController* leftProp;
 
@@ -38,23 +39,24 @@ void setup(){
   SPI.begin();
   Serial.println("SPI Active.");
  
-  //pixyReader = new PixyReader();
-  //Serial.println("Pixy Active.");
+  pixyReader = new PixyReader();
+  Serial.println("Pixy Active.");
   //accelerometerReader = new AccelerometerReader();
   //Serial.println("Accelerometer Active.");
   ///*
-  stepperController1 = new StepperController(9,4,6);
+//  stepperController1 = new StepperController(9,4,6);
+//  delay(100);
+//  Serial.println("Stepper 1 active.");
+//  stepperController2 = new StepperController(10,3,5);
+//  delay(100);
+//  Serial.println("Stepper 2 active.");
+  
+  stepperController3 = new StepperController(11,33,31);
   delay(100);
-  Serial.println("Stepper 1 active.");
-  stepperController2 = new StepperController(10,3,5);
-  delay(100);
-  Serial.println("Stepper 2 active.");
-  /*
-  stepperController3 = new StepperController(11);
-  delay(100);
-  //stepperController4 = new StepperController(12);
-  Serial.println("Stepper Driver Active.");
-  */
+  Serial.println("Stepper 3 active.");
+ // stepperController4 = new StepperController(12,34,32);
+ // Serial.println("Stepper 4 active.");
+  
   //rightProp = new PropellerController(18);
   Serial.println("Setup finished.");
   delay(2000);
@@ -64,43 +66,43 @@ void loop(){
   while(true)
   {
     updateSteppers();
-    //sensorReadAction.check();
-    //pixyPrintAction.check();
+    sensorReadAction.check();
+    pixyPrintAction.check();
     updateStepperSetpointAction.check();
-    //updatePropAction.check();
-    //updatePropSetpointAction.check();
+    updatePropAction.check();
+    updatePropSetpointAction.check();
     delayMicroseconds(stepperDelayUs);
   }
 }
 
 void updateSensors()
 {
-  //pixyReader->updatePixyVals();
-  accelerometerReader->updateAccelerometerVals();
+  pixyReader->updatePixyVals();
+  //accelerometerReader->updateAccelerometerVals();
 }
 
 void updateSteppers()
 {
-  stepperController1->updatePulseApplication();
-  stepperController2->updatePulseApplication();
-  //stepperController3->updatePulseApplication();
+  //stepperController1->updatePulseApplication();
+  //stepperController2->updatePulseApplication();
+  stepperController3->updatePulseApplication();
   //stepperController4->updatePulseApplication();
 }
 
 void updateStepperSetpoint()
 {
-  if(stepperController1->targetStepCount == 0)
+  if(stepperController3->targetStepCount == 0)
   {
-    stepperController1->targetStepCount = 1000;
-    stepperController2->targetStepCount = 1000;
-    //stepperController3->targetStepCount = -400;
-    //stepperController4->targetStepCount = 400;
+    //stepperController1->targetStepCount = 1000;
+    //stepperController2->targetStepCount = 1000;
+    stepperController3->targetStepCount = 1000;
+    //stepperController4->targetStepCount = 1000;
   }
   else
   {
-    stepperController1->targetStepCount = 0;
-    stepperController2->targetStepCount = 0;
-    //stepperController3->targetStepCount = 0;
+    //stepperController1->targetStepCount = 0;
+    //stepperController2->targetStepCount = 0;
+    stepperController3->targetStepCount = 0;
     //stepperController4->targetStepCount = 0;
   }
   Serial.println("Stepper setpoints updated!");
@@ -108,7 +110,7 @@ void updateStepperSetpoint()
 
 void updateProps()
 {
-  //leftProp->updateVelocity();
+  leftProp->updateVelocity();
   rightProp->updateVelocity();
 }
 
@@ -116,19 +118,19 @@ void updatePropSetpoint()
 {
   if(rightProp->targetProportion != 0.4)
   {
-    //leftProp->targetProportion = 1;
+    leftProp->targetProportion = 1;
     rightProp->targetProportion = 0.4;
   }
   else
   {
-    //leftProp->targetProportion = -1;
+    leftProp->targetProportion = -1;
     rightProp->targetProportion = -0.4;
   }
 }
 
 void printPixyVals()
 {
-  /*
+  
   if(pixyReader->updatesSinceLastSuccess == 0)
   {
     Serial.print("Biggest bounding box had propAcross:\t");
@@ -143,9 +145,9 @@ void printPixyVals()
   {
     Serial.println("No pixy bounding boxes found!");
   }
-  */
   
-  //{
+  
+  /*{
     Serial.print("Acceleromater yields\tpitchAngle: ");
     Serial.print(accelerometerReader->pitchAngle * 180 / 3.14);
     Serial.print("\trollAngle: ");
@@ -159,4 +161,5 @@ void printPixyVals()
     Serial.print("Accelerometer reading failed! Status: ");
     Serial.println(accelerometerReader->errorStatus);
   }
+  */
 }
