@@ -26,7 +26,7 @@ PropellerController* leftProp;
 int stepperDelayUs = 1500;
 TimedAction sensorReadAction = TimedAction(30, updateSensors);
 TimedAction updatePropAction = TimedAction(30, updateProps);
-TimedAction pixyPrintAction = TimedAction(1000, printPixyVals);
+TimedAction pixyPrintAction = TimedAction(3000, printPixyVals);
 TimedAction updateStepperSetpointAction= TimedAction(3000, updateStepperSetpoint);
 TimedAction updatePropSetpointAction= TimedAction(6000, updatePropSetpoint);
  
@@ -63,9 +63,11 @@ void setup(){
   //backRight->targetStepCount = 400;
   delay(100);
   buoyancyController = new BuoyancyController(frontLeft, backLeft, frontRight, backRight);
-  buoyancyController->calibrate();
-  buoyancyController->setAllToNeutral();
   Serial.println("Steppers active.");
+  Serial.println("Calibrating...");
+  buoyancyController->calibrate();
+  Serial.println("Going to neutral..");
+  buoyancyController->setAllToNeutral();
  // stepperController4 = new StepperController(12,34,32);
  // Serial.println("Stepper 4 active.");
   
@@ -79,7 +81,7 @@ void loop(){
   {
     updateSteppers();
     //sensorReadAction.check();
-    //pixyPrintAction.check();
+    pixyPrintAction.check();
     //updateStepperSetpointAction.check();
     //updatePropAction.check();
     //updatePropSetpointAction.check();
@@ -145,7 +147,17 @@ void updatePropSetpoint()
 
 void printPixyVals()
 {
+  Serial.print("FrontLeft: ");
+  Serial.print(buoyancyController->frontLeft->currentStepCount);
+  Serial.print(" BackLeft: ");
+  Serial.print(buoyancyController->backLeft->currentStepCount);
+  Serial.print(" FrontRight: ");
+  Serial.print(buoyancyController->frontRight->currentStepCount);
+  Serial.print(" BackRight: ");
+  Serial.print(buoyancyController->backRight->currentStepCount);
+  Serial.println();
   
+  /*
   if(pixyReader->updatesSinceLastSuccess == 0)
   {
     Serial.print("Biggest bounding box had propAcross:\t");
@@ -159,7 +171,7 @@ void printPixyVals()
   else
   {
     Serial.println("No pixy bounding boxes found!");
-  }
+  } */
   
   
   /*{

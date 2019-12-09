@@ -17,19 +17,19 @@ BuoyancyController::BuoyancyController(StepperController* frontLeftController,
 bool BuoyancyController::updatePulseApplication()
 {
   bool stepped = false;
-  stepped = stepped || frontLeft->updatePulseApplication();
-  stepped = stepped || backLeft->updatePulseApplication();
-  stepped = stepped || frontRight->updatePulseApplication();
-  stepped = stepped || backRight->updatePulseApplication();
+  stepped = frontLeft->updatePulseApplication() || stepped;
+  stepped = backLeft->updatePulseApplication() || stepped;
+  stepped = frontRight->updatePulseApplication() || stepped;
+  stepped = backRight->updatePulseApplication() || stepped;
   return stepped;
 }
 
 bool BuoyancyController::calibrate()
 {
-  frontLeft->targetStepCount = -TRAVEL_LENGTH_STEPS;
-  backLeft->targetStepCount = -TRAVEL_LENGTH_STEPS;
-  frontRight->targetStepCount = -TRAVEL_LENGTH_STEPS;
-  backRight->targetStepCount = -TRAVEL_LENGTH_STEPS;
+  frontLeft->targetStepCount = -2*TRAVEL_LENGTH_STEPS;
+  backLeft->targetStepCount = -2*TRAVEL_LENGTH_STEPS;
+  frontRight->targetStepCount = -2*TRAVEL_LENGTH_STEPS;
+  backRight->targetStepCount = -2*TRAVEL_LENGTH_STEPS;
   while(updatePulseApplication())
   {
     delayMicroseconds(1500);

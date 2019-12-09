@@ -20,13 +20,13 @@ class BuoyancyController
                         StepperController* frontRightController,
                         StepperController* backRightController);
     
-  private:
     StepperController* frontLeft;
     StepperController* backLeft;
     StepperController* frontRight;
     StepperController* backRight;
+  private:
 
-    const long TRAVEL_LENGTH_STEPS = 50000L;
+    const long TRAVEL_LENGTH_STEPS = 5000L;
 }; 
 
 #endif

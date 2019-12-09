@@ -2,12 +2,10 @@
 
 StepperController::StepperController(uint8_t CSPin, int bottomSwitchPin, int topSwitchPin)
 {
-  Serial.println("Initializing stepper controller.");
   driver.setChipSelectPin(CSPin);
 
   // Give the driver some time to power up.
   delay(2);
-  Serial.println("Stepper initialized.");
 
   // Reset the driver to its default settings and clear latched status
   // conditions.
@@ -28,17 +26,14 @@ StepperController::StepperController(uint8_t CSPin, int bottomSwitchPin, int top
   // Set the default direction to forward
   driver.setDirection(1);
 
-  Serial.println("Stepper settings sent.");
   // Enable the motor outputs.
   driver.enableDriver();
-  Serial.println("Stepper enabled.");
 
   pinMode(bottomSwitchPin, INPUT);
   pinMode(topSwitchPin, INPUT);
   chipSelect = CSPin;
   bottomSwitch = bottomSwitchPin;
   topSwitch = topSwitchPin;
-  Serial.println("Stepper limit switches enabled.");
 }
 
 bool StepperController::updatePulseApplication()
