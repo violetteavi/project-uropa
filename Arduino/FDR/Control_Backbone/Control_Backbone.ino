@@ -9,6 +9,7 @@
 
 // methods to be run periodically
 void updateSensors();
+void readSerialForBuoyancy();
 void updateSteppers();
 void updateStepperSetpoint();
 void printPixyVals();
@@ -80,7 +81,7 @@ void loop(){
   while(true)
   {
     updateSteppers();
-    //sensorReadAction.check();
+    sensorReadAction.check();
     pixyPrintAction.check();
     //updateStepperSetpointAction.check();
     //updatePropAction.check();
@@ -91,8 +92,40 @@ void loop(){
 
 void updateSensors()
 {
-  pixyReader->updatePixyVals();
+  //pixyReader->updatePixyVals();
   //accelerometerReader->updateAccelerometerVals();
+  readSerialForBuoyancy();
+}
+
+void readSerialForBuoyancy()
+{
+  long stepDelta = 0.1*BuoyancyController::TRAVEL_LENGTH_STEPS;
+  if (Serial.available() > 0) {
+    int incomingByte = Serial.read();
+    if(incomingByte == -1) return;
+    char parsedByte = (char) incomingByte;
+    switch(parsedByte)
+    {
+      case 'L':
+        buoyancyController->applyRoll(stepDelta);
+        break;
+      case 'R':
+        buoyancyController->applyRoll(-stepDelta);
+        break;
+      case 'F':
+        buoyancyController->applyPitch(stepDelta);
+        break;
+      case 'B':
+        buoyancyController->applyPitch(-stepDelta);
+        break;
+      case 'U':
+        buoyancyController->applyBuoyancy(stepDelta);
+        break;
+      case 'D':
+        buoyancyController->applyBuoyancy(-stepDelta);
+        break;
+    }
+  }
 }
 
 void updateSteppers()
