@@ -43,19 +43,18 @@ StepperController::StepperController(uint8_t CSPin, int bottomSwitchPin, int top
 
 bool StepperController::updatePulseApplication()
 {
-  int positionError = currentStepCount - targetStepCount;
-  if(abs(positionError) <= DEAD_ZONE) return false;
-  bool switchHit = digitalRead(bottomSwitch) == HIGH || digitalRead(topSwitch) == HIGH;
-  if(switchHit) return false;
-  if(positionError < 0)
+  long positionError = targetStepCount - currentStepCount;
+  if(positionError > 0)
   {
+    if(digitalRead(topSwitch) == HIGH) return false;
     setDirectionIfNecessary(true);
     driver.step();
     currentStepCount++;
     return true;
   }
-  if(positionError > 0)
+  if(positionError < 0)
   {
+    if(digitalRead(bottomSwitch) == HIGH) return false;
     setDirectionIfNecessary(false);
     driver.step();
     currentStepCount--;

@@ -1,10 +1,11 @@
 #include <TimedAction.h>
 #include <SPI.h>
+#include <ESC.h>
 #include "PixyReader.h"
 #include "AccelerometerReader.h"
 #include "StepperController.h"
 #include "PropellerController.h"
-#include <ESC.h>
+#include "BuoyancyController.h"
 
 // methods to be run periodically
 void updateSensors();
@@ -17,10 +18,7 @@ void updatePropSetpoint();
 // interfaces encapsulated for code hygiene
 PixyReader* pixyReader;
 //AccelerometerReader* accelerometerReader;
-StepperController* stepperController1;
-StepperController* stepperController2;
-StepperController* stepperController3;
-StepperController* stepperController4;
+BuoyancyController* buoyancyController;
 PropellerController* rightProp;
 PropellerController* leftProp;
 
@@ -39,8 +37,8 @@ void setup(){
   SPI.begin();
   Serial.println("SPI Active.");
  
-  pixyReader = new PixyReader();
-  Serial.println("Pixy Active.");
+  //pixyReader = new PixyReader();
+  //Serial.println("Pixy Active.");
   //accelerometerReader = new AccelerometerReader();
   //Serial.println("Accelerometer Active.");
   ///*
@@ -51,9 +49,23 @@ void setup(){
 //  delay(100);
 //  Serial.println("Stepper 2 active.");
   
-  stepperController3 = new StepperController(11,33,31);
   delay(100);
-  Serial.println("Stepper 3 active.");
+  StepperController* frontLeft = new StepperController(9,4,6);
+  //frontLeft->targetStepCount = 400;
+  delay(100);
+  StepperController* backLeft = new StepperController(10,3,5);
+  //backLeft->targetStepCount = 400;
+  delay(100);
+  StepperController* frontRight = new StepperController(11,7,2);
+  //frontRight->targetStepCount = 400;
+  delay(100);
+  StepperController* backRight = new StepperController(12,8,13);
+  //backRight->targetStepCount = 400;
+  delay(100);
+  buoyancyController = new BuoyancyController(frontLeft, backLeft, frontRight, backRight);
+  buoyancyController->calibrate();
+  buoyancyController->setAllToNeutral();
+  Serial.println("Steppers active.");
  // stepperController4 = new StepperController(12,34,32);
  // Serial.println("Stepper 4 active.");
   
@@ -66,11 +78,11 @@ void loop(){
   while(true)
   {
     updateSteppers();
-    sensorReadAction.check();
-    pixyPrintAction.check();
-    updateStepperSetpointAction.check();
-    updatePropAction.check();
-    updatePropSetpointAction.check();
+    //sensorReadAction.check();
+    //pixyPrintAction.check();
+    //updateStepperSetpointAction.check();
+    //updatePropAction.check();
+    //updatePropSetpointAction.check();
     delayMicroseconds(stepperDelayUs);
   }
 }
@@ -83,14 +95,16 @@ void updateSensors()
 
 void updateSteppers()
 {
+  buoyancyController->updatePulseApplication();
   //stepperController1->updatePulseApplication();
   //stepperController2->updatePulseApplication();
-  stepperController3->updatePulseApplication();
+  //stepperController3->updatePulseApplication();
   //stepperController4->updatePulseApplication();
 }
 
 void updateStepperSetpoint()
 {
+  /*
   if(stepperController3->targetStepCount == 0)
   {
     //stepperController1->targetStepCount = 1000;
@@ -106,6 +120,7 @@ void updateStepperSetpoint()
     //stepperController4->targetStepCount = 0;
   }
   Serial.println("Stepper setpoints updated!");
+  */
 }
 
 void updateProps()
