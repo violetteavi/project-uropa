@@ -221,5 +221,5 @@ void printPixyVals()
     Serial.print("Accelerometer reading failed! Status: ");
     Serial.println(accelerometerReader->errorStatus);
   }
-  */
+//  */
 }
