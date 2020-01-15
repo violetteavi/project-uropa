@@ -7,15 +7,19 @@
 class StepperController 
 { 
   public: 
-    float targetStepCount = 0;
-    float currentStepCount = 0;
+    long targetStepCount = 0;
+    long currentStepCount = 0;
     
     bool updatePulseApplication(); 
-    StepperController(uint8_t CSPin);
+    StepperController(uint8_t CSPin, int bottomSwitchPin, int topSwitchPin);
   private:
     HighPowerStepperDriver driver;
-    const int DEAD_ZONE = 0;
+    const long DEAD_ZONE = 0;
     void setDirectionIfNecessary(bool forward);
+
+    int chipSelect;
+    int bottomSwitch;
+    int topSwitch;
 }; 
 
 #endif
